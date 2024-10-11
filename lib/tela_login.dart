@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:project/cadastro.dart';
 import 'package:project/main.dart';
+import 'package:project/tela_company.dart';
+import 'package:project/user_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -84,7 +86,11 @@ class LoginScreen extends StatelessWidget {
                     // Ação de login
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => UserPage()),
+                      MaterialPageRoute(
+                          builder: (context) => UserScreen(),
+                          settings: RouteSettings(
+                            name: 'UserScreen',
+                          )),
                     );
                   },
                   child: const Text(
@@ -95,9 +101,30 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16.0),
 
+              SizedBox(
+                height: 50.0,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black, // Cor preta
+                  ),
+                  onPressed: () {
+                    // Ação de login
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CompanyPage()),
+                    );
+                  },
+                  child: const Text(
+                    'Login Empresa',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+
               // Texto sobre criar conta
               const Text(
-                'se não tiver conta clique abaixo',
+                'caso não possua conta clique abaixo',
                 style: TextStyle(
                   fontSize: 16.0,
                   color: Colors.grey,

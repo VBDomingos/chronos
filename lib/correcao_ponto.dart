@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:project/main.dart';
 import 'package:project/tela_company.dart';
+import 'package:project/widgets/bottom_nav_bar.dart';
+import 'package:project/widgets/header.dart';
 
 class CorrecaoPontoScreen extends StatefulWidget {
   @override
@@ -50,16 +52,7 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            // Ação ao pressionar "Voltar"
-            Navigator.pop(context);
-          },
-        ),
-        title: Text('Correção de ponto'),
-      ),
+      appBar: Header(),
       // Garante que a tela se ajuste quando o teclado estiver aberto
       resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
@@ -191,19 +184,6 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
             ),
             const SizedBox(height: 16.0),
 
-            // Campo de Observação
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Observação',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              maxLines: 3,
-              maxLength: 50,
-            ),
-            const SizedBox(height: 24.0),
-
             // Botões de Ação
             ElevatedButton(
               onPressed: () {
@@ -231,35 +211,7 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
         ),
       ),
       // Rodapé
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton.icon(
-              onPressed: () {
-                // Ação para Tela Company
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CompanyPage()),
-                );
-              },
-              icon: const Icon(Icons.home),
-              label: const Text('Tela Inicial'),
-            ),
-            ElevatedButton.icon(
-              onPressed: () {
-                // Ação para Tela do Usuário
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => UserPage()),
-                );
-              },
-              icon: const Icon(Icons.person),
-              label: const Text('Tela do Usuário'),
-            ),
-          ],
-        ),
-      ),
+      bottomNavigationBar: CustomBottomNavigationBar(),
     );
   }
 }

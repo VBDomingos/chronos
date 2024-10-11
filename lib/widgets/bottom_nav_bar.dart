@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:project/main.dart';
 import 'package:project/user_screen.dart';
 import 'package:project/config_screen.dart';
-
 
 class CustomBottomNavigationBar extends StatelessWidget {
   const CustomBottomNavigationBar({
@@ -16,26 +16,34 @@ class CustomBottomNavigationBar extends StatelessWidget {
         children: [
           ElevatedButton.icon(
             onPressed: () {
-              // Navigate to HomeScreen
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ConfigPage(),
-                ),
-              );
+              // Verifica se a rota atual já é a UserPage
+              if (ModalRoute.of(context)?.settings.name != 'UserScreen') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserScreen(),
+                    settings: RouteSettings(
+                        name: 'UserScreen'), // Define o nome da rota
+                  ),
+                );
+              }
             },
             icon: const Icon(Icons.home),
             label: const Text('Tela Inicial'),
           ),
           ElevatedButton.icon(
             onPressed: () {
-              // Navigate to UserScreen
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => UserScreen(),
-                ),
-              );
+              // Verifica se a rota atual já é a UserPage
+              if (ModalRoute.of(context)?.settings.name != 'UserPage') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserPage(),
+                    settings: RouteSettings(
+                        name: 'UserPage'), // Define o nome da rota
+                  ),
+                );
+              }
             },
             icon: const Icon(Icons.person),
             label: const Text('Tela do Usuário'),

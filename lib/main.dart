@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:project/correcao_ponto.dart';
 import 'package:project/tela_login.dart';
 import 'package:project/user_screen.dart';
+import 'package:project/widgets/bottom_nav_bar.dart';
 import 'widgets/dotw_indicator.dart';
 import 'widgets/header.dart';
 
@@ -12,10 +13,10 @@ void main() {
       primaryColor: Colors.white,
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.grey[300],  // Global background color
-          foregroundColor: Colors.black,  // Global text and icon color
+          backgroundColor: Colors.grey[300], // Global background color
+          foregroundColor: Colors.black, // Global text and icon color
         ),
-    ),
+      ),
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.white, // Cor do AppBar
       ),
@@ -79,11 +80,10 @@ class UserPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Indicador de dia da semana
+            DayoftheweekIndicator(),
 
-          // Indicador de dia da semana
-          DayoftheweekIndicator(),
-
-          const SizedBox(height: 10),
+            const SizedBox(height: 10),
 
             // Busca de Histórico
             const Text(
@@ -213,32 +213,7 @@ class UserPage extends StatelessWidget {
       ),
 
       // Rodapé com botões
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton.icon(
-              onPressed: () {
-                // Ação para Tela Inicial
-              },
-              icon: const Icon(Icons.home),
-              label: const Text('Tela Inicial'),
-            ),
-            ElevatedButton.icon(
-              onPressed: () {
-                // Ação para Tela do Usuário
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => UserScreen()),
-                  );
-              },
-              icon: const Icon(Icons.person),
-              label: const Text('Tela do Usuário'),
-            ),
-          ],
-        ),
-      ),
+      bottomNavigationBar: CustomBottomNavigationBar(),
     );
   }
 }
@@ -340,7 +315,9 @@ class HoursTable extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => CorrecaoPontoScreen()),
+                              builder: (context) => CorrecaoPontoScreen(),
+                              settings:
+                                  RouteSettings(name: 'CorrecaoPontoScreen')),
                         );
                       },
                     ),

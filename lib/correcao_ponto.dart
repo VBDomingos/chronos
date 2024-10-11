@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:project/main.dart';
+import 'package:project/tela_company.dart';
 
 class CorrecaoPontoScreen extends StatefulWidget {
   @override
@@ -236,7 +237,11 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
           children: [
             ElevatedButton.icon(
               onPressed: () {
-                // Ação para Tela Inicial
+                // Ação para Tela Company
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CompanyPage()),
+                );
               },
               icon: const Icon(Icons.home),
               label: const Text('Tela Inicial'),

@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:project/correcao_ponto.dart';
 import 'package:project/tela_login.dart';
+import 'package:project/user_screen.dart';
+import 'widgets/dotw_indicator.dart';
+import 'widgets/header.dart';
 
 void main() {
   runApp(MaterialApp(
     theme: ThemeData(
       scaffoldBackgroundColor: Colors.white,
-      primaryColor: Colors.white, // Cor primária
-      appBarTheme: AppBarTheme(
+      primaryColor: Colors.white,
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.grey[300],  // Global background color
+          foregroundColor: Colors.black,  // Global text and icon color
+        ),
+    ),
+      appBarTheme: const AppBarTheme(
         backgroundColor: Colors.white, // Cor do AppBar
       ),
       bottomAppBarTheme: const BottomAppBarTheme(
@@ -65,59 +73,17 @@ class UserPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white, // Define o fundo como branco
-      appBar: AppBar(
-        flexibleSpace: Container(
-          color: Colors.white, // Defina a cor de fundo aqui
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            // Função de voltar
-          },
-        ),
-        backgroundColor: Colors.white, // Defina a cor do AppBar
-        title: const Text('Nome do Usuário'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              // Função de atualizar
-            },
-          ),
-        ],
-      ),
+      appBar: Header(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Indicador de dia da semana
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(7, (index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: CircleAvatar(
-                    radius: 5,
-                    backgroundColor: index == 2
-                        ? Colors.blue
-                        : Colors.grey, // Destaque para o dia atual
-                  ),
-                );
-              }),
-            ),
-            const SizedBox(height: 10),
 
-            // Data de hoje
-            Center(
-              child: Text(
-                DateFormat('EEE | dd/MM/yyyy').format(DateTime.now()),
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 20),
+          // Indicador de dia da semana
+          DayoftheweekIndicator(),
+
+          const SizedBox(height: 10),
 
             // Busca de Histórico
             const Text(
@@ -261,6 +227,11 @@ class UserPage extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: () {
                 // Ação para Tela do Usuário
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => UserScreen()),
+                  );
               },
               icon: const Icon(Icons.person),
               label: const Text('Tela do Usuário'),

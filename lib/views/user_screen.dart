@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'widgets/dotw_indicator.dart';
-import 'widgets/header.dart';
-import 'widgets/bottom_nav_bar.dart';
+import '../widgets/dotw_indicator.dart';
+import '../widgets/header.dart';
+import '../widgets/bottom_nav_bar.dart';
 
 class UserScreen extends StatelessWidget {
   @override

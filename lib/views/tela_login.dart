@@ -1,11 +1,41 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:project/cadastro.dart';
-import 'package:project/main.dart';
-import 'package:project/tela_company.dart';
-import 'package:project/user_screen.dart';
+import 'package:project/views/cadastro.dart';
+import 'package:project/views/history.dart';
+import 'package:project/views/tela_company.dart';
+import 'package:project/views/user_screen.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+  LoginScreen({super.key});
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  Future<void> _login(BuildContext context) async {
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => UserScreen(),
+            settings: RouteSettings(
+              name: 'UserScreen',
+            )),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Login bem-sucedido!'),
+      ));
+      // Navegar para a home ou próxima tela
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Erro: ${e.message}'),
+      ));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +80,7 @@ class LoginScreen extends StatelessWidget {
 
               // Campo de email
               TextField(
+                controller: _emailController,
                 decoration: InputDecoration(
                   labelText: 'email@domain.com',
                   border: OutlineInputBorder(
@@ -63,6 +94,7 @@ class LoginScreen extends StatelessWidget {
 
               // Campo de senha
               TextField(
+                controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'senha',
@@ -82,40 +114,12 @@ class LoginScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black, // Cor preta
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     // Ação de login
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => UserScreen(),
-                          settings: RouteSettings(
-                            name: 'UserScreen',
-                          )),
-                    );
+                    await _login(context);
                   },
                   child: const Text(
                     'Login',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-
-              SizedBox(
-                height: 50.0,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black, // Cor preta
-                  ),
-                  onPressed: () {
-                    // Ação de login
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CompanyPage()),
-                    );
-                  },
-                  child: const Text(
-                    'Login Empresa',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),

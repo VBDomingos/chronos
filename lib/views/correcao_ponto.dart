@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:project/main.dart';
-import 'package:project/tela_company.dart';
+import 'package:project/views/history.dart';
+import 'package:project/views/tela_company.dart';
 import 'package:project/widgets/bottom_nav_bar.dart';
 import 'package:project/widgets/header.dart';
 

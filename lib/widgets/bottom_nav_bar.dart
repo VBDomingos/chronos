@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:project/main.dart';
-import 'package:project/user_screen.dart';
-import 'package:project/config_screen.dart';
+import 'package:project/views/history.dart';
+import 'package:project/views/user_screen.dart';
+import 'package:project/views/config_screen.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   const CustomBottomNavigationBar({

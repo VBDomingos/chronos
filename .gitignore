@@ -42,3 +42,8 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 node_modules
+
+# Ignore o arquivo de opções do Firebase
+lib/firebaseoptions.dart
+firebaseoptions.dart
+/project/lib/firebaseoptions.dart

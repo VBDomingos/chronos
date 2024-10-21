@@ -1,3 +1,6 @@
+# Trello
+http://trello.com/b/juUX4qUn/cronos-point-scrum
+
 # project
 
 | Login | Cadastro | Tela Usuário | Tela Edição de ponto |

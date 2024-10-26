@@ -5,8 +5,8 @@ import 'package:project/views/config_screen.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   const CustomBottomNavigationBar({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => UserScreen(),
-                    settings: RouteSettings(
+                    settings: const RouteSettings(
                         name: 'UserScreen'), // Define o nome da rota
                   ),
                 );
@@ -39,7 +39,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => UserPage(),
-                    settings: RouteSettings(
+                    settings: const RouteSettings(
                         name: 'UserPage'), // Define o nome da rota
                   ),
                 );

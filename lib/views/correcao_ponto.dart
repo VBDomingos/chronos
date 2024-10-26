@@ -6,15 +6,17 @@ import 'package:project/widgets/bottom_nav_bar.dart';
 import 'package:project/widgets/header.dart';
 
 class CorrecaoPontoScreen extends StatefulWidget {
+  const CorrecaoPontoScreen({super.key});
+
   @override
   _CorrecaoPontoScreenState createState() => _CorrecaoPontoScreenState();
 }
 
 class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
   String _tipoCorrecao = 'entrada'; // 'entrada' ou 'saida'
-  TextEditingController _dateController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
   DateTime? _selectedDate;
-  TextEditingController _timeController = TextEditingController();
+  final TextEditingController _timeController = TextEditingController();
   TimeOfDay? _selectedTime;
 
   // Função para abrir o seletor de data
@@ -72,7 +74,7 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
                       });
                     },
                     child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
                         color: _tipoCorrecao == 'entrada'
                             ? Colors.green
@@ -95,7 +97,7 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
                     ),
                   ),
                 ),
-                SizedBox(width: 16.0),
+                const SizedBox(width: 16.0),
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
@@ -104,7 +106,7 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
                       });
                     },
                     child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
                         color: _tipoCorrecao == 'saida'
                             ? Colors.red
@@ -137,7 +139,7 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
               decoration: InputDecoration(
                 labelText: 'Data',
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.calendar_today),
+                  icon: const Icon(Icons.calendar_today),
                   onPressed: () {
                     // Abre o seletor de data
                     _selectDate(context);
@@ -157,7 +159,7 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
               decoration: InputDecoration(
                 labelText: 'Horário',
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.access_time),
+                  icon: const Icon(Icons.access_time),
                   onPressed: () {
                     // Abre o seletor de horário
                     _selectTime(context);
@@ -189,11 +191,11 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
               onPressed: () {
                 // Ação para solicitar correção
               },
-              child: Text('SOLICITAR CORREÇÃO'),
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 16.0),
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
                 backgroundColor: const Color.fromARGB(255, 205, 233, 255),
               ),
+              child: Text('SOLICITAR CORREÇÃO'),
             ),
             const SizedBox(height: 16.0),
 
@@ -202,16 +204,16 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
                 // Ação para cancelar
                 Navigator.pop(context);
               },
-              child: Text('CANCELAR'),
               style: OutlinedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 16.0),
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
               ),
+              child: Text('CANCELAR'),
             ),
           ],
         ),
       ),
       // Rodapé
-      bottomNavigationBar: CustomBottomNavigationBar(),
+      bottomNavigationBar: const CustomBottomNavigationBar(),
     );
   }
 }

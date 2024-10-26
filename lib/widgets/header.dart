@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:project/models/usermodel.dart';
 import 'package:project/views/config_screen.dart';
 import 'package:project/views/tela_login.dart';
+import 'package:provider/provider.dart';
 
 class Header extends StatefulWidget implements PreferredSizeWidget {
+  const Header({super.key});
+
   @override
   _HeaderState createState() => _HeaderState();
 
@@ -13,29 +17,33 @@ class Header extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _HeaderState extends State<Header> {
-  String? fullName;
+  UserModel? userModel;
 
   @override
   void initState() {
     super.initState();
+    userModel = Provider.of<UserModel>(context, listen: false);
     _fetchUserData();
   }
 
   Future<void> _fetchUserData() async {
     try {
-      // Pega o usuário atual autenticado
       User? user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
-        // Busca o documento do Firestore baseado no UID do usuário
-        DocumentSnapshot<Map<String, dynamic>> userDoc =
-            await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        DocumentSnapshot<Map<String, dynamic>> userDoc = await FirebaseFirestore
+            .instance
+            .collection('Users')
+            .doc(user.uid)
+            .get();
 
         if (userDoc.exists) {
-          setState(() {
-            // Atualiza o nome do usuário
-            fullName = userDoc.data()?['nome'];
-          });
+          userModel?.setUserData(
+              userDoc.data()?['name'],
+              userDoc.data()?['workingPattern'],
+              userDoc.data()?['companyId'],
+              userDoc.data()?['uid']);
+          await userModel?.setCompanyWorkingTime(context);
         }
       }
     } catch (e) {
@@ -60,14 +68,15 @@ class _HeaderState extends State<Header> {
                 settings: const RouteSettings(name: 'LoginScreen'),
               ),
             );
-            final FirebaseAuth _auth = FirebaseAuth.instance;
-            _auth.signOut();
+            final FirebaseAuth auth = FirebaseAuth.instance;
+            auth.signOut();
           }
         },
       ),
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       title: Text(
-        fullName ?? 'Nome do Usuario', // Exibe o nome do usuário se disponível
+        userModel?.fullName ??
+            'Carregando...', // Exibe o nome do usuário se disponível
         style: const TextStyle(color: Colors.black),
       ),
       centerTitle: true,
@@ -80,8 +89,8 @@ class _HeaderState extends State<Header> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ConfigPage(),
-                    settings: RouteSettings(
+                    builder: (context) => const ConfigPage(),
+                    settings: const RouteSettings(
                         name: 'ConfigPage'), // Define o nome da rota
                   ),
                 );

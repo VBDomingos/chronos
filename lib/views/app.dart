@@ -6,6 +6,8 @@ import 'package:project/views/cadastro.dart';
 import 'package:project/views/tela_login.dart';
 
 class ChronosPointApp extends StatelessWidget {
+  const ChronosPointApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,8 +22,6 @@ class ChronosPointApp extends StatelessWidget {
           builder: (context, AsyncSnapshot<User?> snapshot) {
             return LoginScreen();
           },
-        )
-        // initialRoute: "/login",
-        );
+        ));
   }
 }

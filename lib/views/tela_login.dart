@@ -18,22 +18,46 @@ class LoginScreen extends StatelessWidget {
         email: _emailController.text,
         password: _passwordController.text,
       );
-      Navigator.push(
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Login bem-sucedido!')),
+      );
+
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) => UserScreen(),
-            settings: RouteSettings(
-              name: 'UserScreen',
-            )),
+          builder: (context) => const UserScreen(),
+          settings: const RouteSettings(name: 'UserScreen'),
+        ),
       );
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Login bem-sucedido!'),
-      ));
-      // Navegar para a home ou próxima tela
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Erro: ${e.message}'),
-      ));
+      String errorMessage;
+      switch (e.code) {
+        case 'invalid-email':
+          errorMessage = 'O endereço de e-mail fornecido é inválido.';
+          break;
+        case 'invalid-credential':
+          errorMessage =
+              'As credenciais fornecidas são inválidas. Verifique e tente novamente.';
+          break;
+        case 'user-disabled':
+          errorMessage =
+              'Esta conta foi desativada. Entre em contato com o suporte.';
+          break;
+        case 'user-not-found':
+          errorMessage = 'Nenhuma conta encontrada com este e-mail.';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Senha incorreta. Tente novamente.';
+          break;
+        default:
+          errorMessage = 'Erro inesperado. Tente novamente mais tarde.';
+          break;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
     }
   }
 

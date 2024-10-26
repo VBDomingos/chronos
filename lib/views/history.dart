@@ -216,7 +216,7 @@ class UserPage extends StatelessWidget {
       ),
 
       // Rodapé com botões
-      bottomNavigationBar: CustomBottomNavigationBar(),
+      bottomNavigationBar: const CustomBottomNavigationBar(),
     );
   }
 }
@@ -319,8 +319,8 @@ class HoursTable extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => CorrecaoPontoScreen(),
-                              settings:
-                                  RouteSettings(name: 'CorrecaoPontoScreen')),
+                              settings: const RouteSettings(
+                                  name: 'CorrecaoPontoScreen')),
                         );
                       },
                     ),

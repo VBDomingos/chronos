@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CustomCircularProgress extends StatelessWidget {
+  const CustomCircularProgress({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -11,11 +13,11 @@ class CustomCircularProgress extends StatelessWidget {
         children: [
           // Draw the custom circular progress
           CustomPaint(
-            size: Size(150, 150),
+            size: const Size(150, 150),
             painter: CircularProgressPainter(),
           ),
           // Text inside the circle
-          Positioned(
+          const Positioned(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

@@ -5,177 +5,171 @@ import '../widgets/header.dart';
 import '../widgets/bottom_nav_bar.dart';
 
 class CompanyPage extends StatelessWidget {
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: Colors.white,
-    appBar: Header(),
-    body: SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
+  const CompanyPage({super.key});
 
-            // Indicador de dia da semana
-            DayoftheweekIndicator(),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: Header(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CustomCircularProgress(),
-              const SizedBox(width: 30.0),
+              // Indicador de dia da semana
+              DayoftheweekIndicator(),
 
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                CustomCircularProgress(),
+                const SizedBox(width: 30.0),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 5.0, vertical: 8.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12.0),
+                        border: Border.all(color: Colors.green, width: 2.0),
+                      ),
+                      child: const Text(
+                        'Trabalhando',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 4.0),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12.0),
+                        border: Border.all(color: Colors.yellow, width: 2.0),
+                      ),
+                      child: const Text(
+                        'A Iniciar',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 4.0),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12.0),
+                        border: Border.all(color: Colors.red, width: 2.0),
+                      ),
+                      child: const Text(
+                        'Em Falta',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 4.0),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12.0),
+                        border: Border.all(color: Colors.blue, width: 2.0),
+                      ),
+                      child: const Text(
+                        'Ausente',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 16.0),
+                  ],
+                ),
+              ]),
+
+              const SizedBox(height: 20.0),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12.0),
-                      border: Border.all(color: Colors.green, width: 2.0),
-                    ),
-                    child: Text(
-                      'Trabalhando',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
+                  Column(
+                    children: [
+                      const Text(
+                        'Completou Jorn.',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SummaryBox(color: Colors.green, value: '03'),
+                    ],
                   ),
-
-                  const SizedBox(height: 4.0),
-
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12.0),
-                      border: Border.all(color: Colors.yellow, width: 2.0),
-                    ),
-                    child: Text(
-                      'A Iniciar',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
+                  Column(
+                    children: [
+                      const Text(
+                        'Atrasado',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SummaryBox(color: Colors.red, value: '01'),
+                    ],
                   ),
-                  const SizedBox(height: 4.0),
-
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12.0),
-                      border: Border.all(color: Colors.red, width: 2.0),
-                    ),
-                    child: Text(
-                      'Em Falta',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
+                  Column(
+                    children: [
+                      const Text(
+                        'Em Pausa',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SummaryBox(color: Colors.blue, value: '02'),
+                    ],
                   ),
-                  const SizedBox(height: 4.0),
-
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12.0),
-                      border: Border.all(color: Colors.blue, width: 2.0),
-                    ),
-                    child: Text(
-                      'Ausente',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
                 ],
               ),
+              const SizedBox(height: 24.0),
 
-            ]
-          ),
-
-          const SizedBox(height: 20.0),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
-                children: [
-                  Text(
-                    'Completou Jorn.',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+              TextField(
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.search),
+                  hintText: 'Buscar Funcionário',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
-                  SummaryBox(color: Colors.green, value: '03'),
-                ],
+                ),
               ),
+              const SizedBox(height: 24.0),
+
               Column(
                 children: [
-                  Text(
-                    'Atrasado',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  SummaryBox(color: Colors.red, value: '01'),
-                ],
-              ),
-              Column(
-                children: [
-                  Text(
-                    'Em Pausa',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  SummaryBox(color: Colors.blue, value: '02'),
-                
+                  EmployeeStatusRow(status: 'Em Pausa', color: Colors.blue),
+                  const Divider(height: 2.0),
+                  EmployeeStatusRow(status: 'Trabalhando', color: Colors.green),
+                  const Divider(height: 2.0),
+                  EmployeeStatusRow(status: 'Trabalhando', color: Colors.green),
+                  const Divider(height: 2.0),
+                  EmployeeStatusRow(status: 'Faltou', color: Colors.red),
                 ],
               ),
             ],
           ),
-          const SizedBox(height: 24.0),
-
-          TextField(
-            decoration: InputDecoration(
-              prefixIcon: Icon(Icons.search),
-              hintText: 'Buscar Funcionário',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24.0),
-
-          Column(
-            children: [
-              EmployeeStatusRow(status: 'Em Pausa', color: Colors.blue),
-              Divider(height: 2.0),
-              EmployeeStatusRow(status: 'Trabalhando', color: Colors.green),
-              Divider(height: 2.0),
-              EmployeeStatusRow(status: 'Trabalhando', color: Colors.green),
-              Divider(height: 2.0),
-              EmployeeStatusRow(status: 'Faltou', color: Colors.red),
-            ],
-          ),
-        ],
+        ),
       ),
-    ),
-  ),
-  bottomNavigationBar: CustomBottomNavigationBar(),
-);
-}
+      bottomNavigationBar: const CustomBottomNavigationBar(),
+    );
+  }
 }
 
 class SummaryBox extends StatelessWidget {
   final Color color;
   final String value;
 
-  SummaryBox({required this.color, required this.value});
+  const SummaryBox({super.key, required this.color, required this.value});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 100,
       height: 50,
-      padding: EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.0),
@@ -184,7 +178,8 @@ class SummaryBox extends StatelessWidget {
       child: Center(
         child: Text(
           value,
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: color),
+          style: TextStyle(
+              fontSize: 24, fontWeight: FontWeight.bold, color: color),
         ),
       ),
     );
@@ -195,12 +190,13 @@ class EmployeeStatusRow extends StatelessWidget {
   final String status;
   final Color color;
 
-  EmployeeStatusRow({required this.status, required this.color});
+  const EmployeeStatusRow(
+      {super.key, required this.status, required this.color});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text('Funcionário'),
+      title: const Text('Funcionário'),
       trailing: Text(
         status,
         style: TextStyle(color: color, fontSize: 16),

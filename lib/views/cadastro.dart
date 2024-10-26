@@ -4,14 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:project/views/tela_login.dart';
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
   RegisterScreen({super.key});
 
+  @override
+  _RegisterScreenState createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
   final cpfController = MaskedTextController(mask: '000.000.000-00');
   final phoneController = MaskedTextController(mask: '(00) 00000-0000');
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  String? selectedWorkingPattern;
 
   final fullNameController = TextEditingController();
   final companyCodeController = TextEditingController();
@@ -21,35 +27,67 @@ class RegisterScreen extends StatelessWidget {
 
   Future<void> _registerUser(BuildContext context) async {
     try {
-      // Registrar o usuário com email e senha
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      // Registro com email e senha
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
       // Armazenar informações adicionais no Firestore
       await _firestore.collection('users').doc(userCredential.user!.uid).set({
-        'nome': fullNameController.text.trim(),
+        'name': fullNameController.text.trim(),
         'email': _emailController.text.trim(),
         'cpf': cpfController.text.trim(),
         'telefone': phoneController.text.trim(),
-        'codigoEmpresa': companyCodeController.text.trim(),
+        'companyId': companyCodeController.text.trim(),
         'createdAt': FieldValue.serverTimestamp(),
+        'role': 'employee',
+        'workingPattern': selectedWorkingPattern,
+        'uid': userCredential.user!.uid,
       });
 
-      // Sucesso - você pode redirecionar o usuário ou mostrar uma mensagem
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Conta criada com sucesso!'),
-        backgroundColor: Colors.green,
-      ));
-
-      // Redireciona para a tela de login ou outra tela
+      // Mensagem de sucesso e redirecionamento
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Conta criada com sucesso!'),
+          backgroundColor: Colors.green,
+        ),
+      );
       Navigator.pushReplacementNamed(context, '/login');
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      switch (e.code) {
+        case 'weak-password':
+          errorMessage =
+              'A senha fornecida é muito fraca. Tente outra senha mais segura.';
+          break;
+        case 'email-already-in-use':
+          errorMessage =
+              'Este email já está em uso. Tente fazer login ou utilize outro email.';
+          break;
+        case 'invalid-email':
+          errorMessage =
+              'O email fornecido é inválido. Verifique o endereço e tente novamente.';
+          break;
+        default:
+          errorMessage = 'Erro inesperado: ${e.message}';
+          break;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Erro: $e'),
-        backgroundColor: Colors.red,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Erro inesperado. Tente novamente mais tarde.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      print(e); // Log do erro para debug
     }
   }
 
@@ -188,6 +226,39 @@ class RegisterScreen extends StatelessWidget {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
+                    fillColor: Colors.grey[200],
+                  ),
+                ),
+                const SizedBox(height: 24.0),
+
+                // Dropdown para o padrão de trabalho
+                DropdownButtonFormField<String>(
+                  value: selectedWorkingPattern,
+                  onChanged: (String? newValue) {
+                    // Atualiza o estado com a nova seleção
+                    setState(() {
+                      selectedWorkingPattern = newValue;
+                    });
+                  },
+                  items: const [
+                    DropdownMenuItem(
+                      value: 'fulltime',
+                      child: Text('Escala cheia (8 horas)'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'halftime',
+                      child: Text('Meia escala (4 horas)'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'free',
+                      child: Text('Escala livre'),
+                    ),
+                  ],
+                  decoration: InputDecoration(
+                    labelText: 'Padrão de trabalho',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
                     filled: true,
                     fillColor: Colors.grey[200],
                   ),
@@ -201,39 +272,7 @@ class RegisterScreen extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black, // Cor preta
                     ),
-                    onPressed: () async {
-                      try {
-                        await _registerUser(context);
-
-                        // Sucesso: exibe uma mensagem e redireciona
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text('Usuário criado com sucesso!'),
-                        ));
-
-                        // Redirecionar o usuário para a tela de login após o cadastro bem-sucedido
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => LoginScreen()),
-                        );
-                      } on FirebaseAuthException catch (e) {
-                        if (e.code == 'weak-password') {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text('A senha fornecida é muito fraca.'),
-                          ));
-                        } else if (e.code == 'email-already-in-use') {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text('A conta já existe para este email.'),
-                          ));
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text('Erro: ${e.message}'),
-                          ));
-                        }
-                      } catch (e) {
-                        print(e);
-                      }
-                    },
+                    onPressed: () async => await _registerUser(context),
                     child: const Text(
                       'Criar conta',
                       style: TextStyle(color: Colors.white),

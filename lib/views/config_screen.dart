@@ -12,56 +12,53 @@ class ConfigPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: Header(),
-
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Opções',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+      backgroundColor: Colors.white,
+      appBar: Header(),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Opções',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
-              const SizedBox(height: 20),
-              // Notifications toggle
-              SettingToggle(
-                title: 'Notificações',
-                initialValue: true,
-                onChanged: (value) {
-                  // Handle change
-                },
-              ),
-              const SizedBox(height: 20),
-              // Dark Mode toggle
-              SettingToggle(
-                title: 'Modo Escuro',
-                initialValue: false,
-                onChanged: (value) {
-                  // Handle change
-                },
-              ),
-              const SizedBox(height: 20),
-              // Auto-login toggle
-              SettingToggle(
-                title: 'Login Automático',
-                initialValue: true,
-                onChanged: (value) {
-                  // Handle change
-                },
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 20),
+            // Notifications toggle
+            SettingToggle(
+              title: 'Notificações',
+              initialValue: true,
+              onChanged: (value) {
+                // Handle change
+              },
+            ),
+            const SizedBox(height: 20),
+            // Dark Mode toggle
+            SettingToggle(
+              title: 'Modo Escuro',
+              initialValue: false,
+              onChanged: (value) {
+                // Handle change
+              },
+            ),
+            const SizedBox(height: 20),
+            // Auto-login toggle
+            SettingToggle(
+              title: 'Login Automático',
+              initialValue: true,
+              onChanged: (value) {
+                // Handle change
+              },
+            ),
+          ],
         ),
-      
-        bottomNavigationBar: CustomBottomNavigationBar(),
-
-      );
+      ),
+      bottomNavigationBar: const CustomBottomNavigationBar(),
+    );
   }
 }
 

@@ -29,7 +29,7 @@ Stores personal details of employees, their work schedule, time records, and lea
 | `workingHours`| map   | Employee's scheduled working hours by day (see below). |
 | `leaves`      | map   | History of leaves taken by the employee.        |
 
-#### Leave Array:
+#### Leave Map:
 Each entry represents a leave record:
 
 | Field         | Type    | Description                                       |

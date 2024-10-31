@@ -29,6 +29,15 @@ Stores personal details of employees, their work schedule, time records, and lea
 | `workingHours`| map   | Employee's scheduled working hours by day (see below). |
 | `leaves`      | array | History of leaves taken by the employee.        |
 
+#### Leave Array:
+Each entry represents a leave record:
+
+| Field         | Type    | Description                                       |
+|---------------|---------|---------------------------------------------------|
+| `leaveType`   | string  | Type of leave (e.g., vacation, sick leave).       |
+| `startDate`   | string  | Start date of the leave (format: YYYY-MM-DD).     |
+| `endDate`     | string  | End date of the leave (format: YYYY-MM-DD).       |
+
 #### Working Hours Map:
 | Field         | Type    | Description                                |
 |---------------|---------|--------------------------------------------|
@@ -38,18 +47,21 @@ Stores personal details of employees, their work schedule, time records, and lea
 | `thursday`    | map     | Object representing Thursday's working hours. |
 | `friday`      | map     | Object representing Friday's working hours. |
 
-Each day object contains:
-- `startTime`: string
-- `endTime`: string
+#### Each **Day Map** (e.g., `monday`, `tuesday`) includes:
 
-#### Leave Array:
-Each entry represents a leave record:
+| Field        | Type   | Description                                        |
+|--------------|--------|----------------------------------------------------|
+| `startTime`  | string | Start time of the workday (e.g., "09:00").         |
+| `endTime`    | string | End time of the workday (e.g., "17:00").           |
+| `breaks`     | array  | List of break periods (see below).                 |
 
-| Field         | Type    | Description                                       |
-|---------------|---------|---------------------------------------------------|
-| `leaveType`   | string  | Type of leave (e.g., vacation, sick leave).       |
-| `startDate`   | string  | Start date of the leave (format: YYYY-MM-DD).     |
-| `endDate`     | string  | End date of the leave (format: YYYY-MM-DD).       |
+#### Breaks Array:
+Each entry in the breaks array represents a break period, containing:
+
+| Field   | Type   | Description                        |
+|---------|--------|------------------------------------|
+| `start` | string | Break start time (e.g., "12:00"). |
+| `end`   | string | Break end time (e.g., "12:30").   |
 
 **Subcollections**:
 

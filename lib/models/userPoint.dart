@@ -5,7 +5,7 @@ import 'package:project/models/usermodel.dart';
 import 'package:provider/provider.dart';
 
 class UserPointModel with ChangeNotifier {
-  Future<void> addWorkingTime(BuildContext context, String type) async {
+  /*Future<void> addWorkingTime(BuildContext context, String type) async {
     UserModel userModel = Provider.of<UserModel>(context, listen: false);
 
     // Formata a data para o formato desejado
@@ -27,5 +27,5 @@ class UserPointModel with ChangeNotifier {
     } catch (e) {
       print('Erro ao adicionar ponto de entrada/saída: $e');
     }
-  }
+  }*/
 }

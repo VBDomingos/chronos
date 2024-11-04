@@ -35,7 +35,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       // Armazenar informações adicionais no Firestore
-      await _firestore.collection('users').doc(userCredential.user!.uid).set({
+      await _firestore.collection('Users').doc(userCredential.user!.uid).set({
         'name': fullNameController.text.trim(),
         'email': _emailController.text.trim(),
         'cpf': cpfController.text.trim(),

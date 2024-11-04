@@ -177,7 +177,7 @@ class UserScreen extends StatelessWidget {
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            userPoint.addWorkingTime(context, 'entry');
+                            /*userPoint.addWorkingTime(context, 'entry');*/
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
@@ -194,7 +194,7 @@ class UserScreen extends StatelessWidget {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            userPoint.addWorkingTime(context, 'exit');
+                            /*userPoint.addWorkingTime(context, 'exit');*/
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.red,

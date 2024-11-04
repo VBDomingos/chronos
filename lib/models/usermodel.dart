@@ -5,25 +5,16 @@ import 'package:provider/provider.dart';
 
 class UserModel with ChangeNotifier {
   String? _fullName;
-  String? _workingPattern;
-  String? _companyId;
-  String? _uid;
 
   String? get fullName => _fullName;
-  String? get workingPattern => _workingPattern;
-  String? get companyId => _companyId;
-  String? get uid => _uid;
 
-  void setUserData(
-      String? name, String? workingPattern, String? companyId, String? uid) {
+  void setUserData(String? name) {
+    print(name);
     _fullName = name;
-    _workingPattern = workingPattern;
-    _companyId = companyId;
-    _uid = uid;
     notifyListeners();
   }
 
-  Future<void> setCompanyWorkingTime(BuildContext context) async {
+  /*Future<void> setCompanyWorkingTime(BuildContext context) async {
     try {
       DocumentSnapshot<Map<String, dynamic>> companyWorkingTimeData =
           await FirebaseFirestore.instance
@@ -54,5 +45,5 @@ class UserModel with ChangeNotifier {
     } catch (e) {
       print('Erro ao buscar dados da empresa: $e');
     }
-  }
+  }*/
 }

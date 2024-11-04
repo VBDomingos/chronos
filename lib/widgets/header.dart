@@ -38,12 +38,9 @@ class _HeaderState extends State<Header> {
             .get();
 
         if (userDoc.exists) {
-          userModel?.setUserData(
-              userDoc.data()?['name'],
-              userDoc.data()?['workingPattern'],
-              userDoc.data()?['companyId'],
-              userDoc.data()?['uid']);
-          await userModel?.setCompanyWorkingTime(context);
+          userModel?.setUserData(userDoc.data()?['name']);
+          print('asddas');
+          print(userModel?.fullName);
         }
       }
     } catch (e) {
@@ -75,8 +72,7 @@ class _HeaderState extends State<Header> {
       ),
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       title: Text(
-        userModel?.fullName ??
-            'Carregando...', // Exibe o nome do usuário se disponível
+        userModel?.fullName ?? 'Carregando...',
         style: const TextStyle(color: Colors.black),
       ),
       centerTitle: true,

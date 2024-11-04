@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:project/views/cadastro.dart';
-import 'package:project/views/history.dart';
-import 'package:project/views/tela_company.dart';
 import 'package:project/views/user_screen.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -11,6 +10,7 @@ class LoginScreen extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final LocalAuthentication _localAuth = LocalAuthentication();
 
   Future<void> _login(BuildContext context) async {
     try {
@@ -36,13 +36,8 @@ class LoginScreen extends StatelessWidget {
         case 'invalid-email':
           errorMessage = 'O endereço de e-mail fornecido é inválido.';
           break;
-        case 'invalid-credential':
-          errorMessage =
-              'As credenciais fornecidas são inválidas. Verifique e tente novamente.';
-          break;
         case 'user-disabled':
-          errorMessage =
-              'Esta conta foi desativada. Entre em contato com o suporte.';
+          errorMessage = 'Esta conta foi desativada. Entre em contato com o suporte.';
           break;
         case 'user-not-found':
           errorMessage = 'Nenhuma conta encontrada com este e-mail.';
@@ -61,9 +56,41 @@ class LoginScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _authenticateWithBiometrics(BuildContext context) async {
+    bool isAuthenticated = false;
+
+    try {
+      isAuthenticated = await _localAuth.authenticate(
+        localizedReason: 'Use sua digital para fazer login',
+        options: const AuthenticationOptions(
+          useErrorDialogs: true,
+          stickyAuth: true,
+        ),
+      );
+    } catch (e) {
+      print(e);
+    }
+
+    if (isAuthenticated) {
+      // Navigate to UserScreen on successful biometric authentication
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const UserScreen(),
+          settings: const RouteSettings(name: 'UserScreen'),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Autenticação biométrica falhou')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
@@ -71,7 +98,6 @@ class LoginScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Título principal
               const Text(
                 'CronosPoint',
                 style: TextStyle(
@@ -81,8 +107,6 @@ class LoginScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 30.0),
-
-              // Subtítulo
               const Text(
                 'Faça seu login',
                 style: TextStyle(
@@ -91,18 +115,8 @@ class LoginScreen extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 8.0),
-
-              const Text(
-                'Coloque seu e-mail e senha',
-                style: TextStyle(
-                  fontSize: 16.0,
-                ),
-                textAlign: TextAlign.center,
-              ),
               const SizedBox(height: 24.0),
 
-              // Campo de email
               TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -116,7 +130,6 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16.0),
 
-              // Campo de senha
               TextField(
                 controller: _passwordController,
                 obscureText: true,
@@ -131,15 +144,13 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24.0),
 
-              // Botão de login
               SizedBox(
                 height: 50.0,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black, // Cor preta
+                    backgroundColor: Colors.black,
                   ),
                   onPressed: () async {
-                    // Ação de login
                     await _login(context);
                   },
                   child: const Text(
@@ -150,7 +161,25 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16.0),
 
-              // Texto sobre criar conta
+              // Button for biometric login
+              SizedBox(
+                height: 50.0,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                  ),
+                  onPressed: () async {
+                    await _authenticateWithBiometrics(context);
+                  },
+                  icon: const Icon(Icons.fingerprint),
+                  label: const Text(
+                    'Login com Biometria',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+
               const Text(
                 'caso não possua conta clique abaixo',
                 style: TextStyle(
@@ -161,15 +190,13 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16.0),
 
-              // Botão de criar conta
               SizedBox(
                 height: 50.0,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[300], // Cor cinza claro
+                    backgroundColor: Colors.grey[300],
                   ),
                   onPressed: () {
-                    // Navega para a tela de registro
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => RegisterScreen()),
@@ -183,7 +210,6 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16.0),
 
-              // Termos de serviço e política de privacidade
               const Text(
                 'By clicking continue, you agree to our Terms of Service and Privacy Policy',
                 style: TextStyle(fontSize: 12.0),

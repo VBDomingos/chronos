@@ -5,7 +5,7 @@ http://trello.com/b/juUX4qUn/cronos-point-scrum
 
 | Login | Cadastro | Tela Usuário | Tela Edição de ponto |
 |-------|----------|--------------|----------------------|
-| ![Login](https://github.com/user-attachments/assets/1fec5c81-aaca-41cd-97e8-94bbf3720fd1) | ![Cadastro](https://github.com/user-attachments/assets/be76b33e-48ee-410e-9c36-d1534897aae7) | ![Tela Usuário](https://github.com/user-attachments/assets/4cefa4b6-58e2-42ce-82b9-284f9a470c08) | ![Tela Edição de ponto](https://github.com/user-attachments/assets/4a9208a2-0e91-4129-ab6f-2b9d54cc2ef3) |
+| ![Login](https://github.com/user-attachments/assets/70ca7a3a-7466-41a7-be0b-31525a17adf6) | ![Cadastro](https://github.com/user-attachments/assets/be76b33e-48ee-410e-9c36-d1534897aae7) | ![Tela Usuário](https://github.com/user-attachments/assets/4cefa4b6-58e2-42ce-82b9-284f9a470c08) | ![Tela Edição de ponto](https://github.com/user-attachments/assets/4a9208a2-0e91-4129-ab6f-2b9d54cc2ef3) |
 
 | Tela principal da empresa | Tela principal do usuário | Tela principal de configurações |
 |---------------------------|---------------------------|---------------------------------|

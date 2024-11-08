@@ -139,7 +139,9 @@ class _UserScreenState extends State<UserScreen> {
                             style: TextStyle(fontWeight: FontWeight.bold)),
                       ],
                     ),
-                    const Divider(),
+                    const Divider(
+                      color: Colors.blueGrey,
+                    ),
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -231,12 +233,25 @@ class _UserScreenState extends State<UserScreen> {
                       decoration: InputDecoration(
                         labelText: "Observações",
                         hintText: "Opcional",
-                        border: OutlineInputBorder(
+                        enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(4),
+                          borderSide: BorderSide(
+                            color: Colors
+                                .grey, // Cor da borda quando o campo não está em foco
+                            width: 1.0,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(4),
+                          borderSide: BorderSide(
+                            color: Colors
+                                .blueAccent, // Cor da borda quando o campo está em foco
+                            width: 2.0,
+                          ),
                         ),
                       ),
                       maxLines: 3,
-                    ),
+                    )
                   ],
                 ),
               ),

@@ -98,11 +98,33 @@ class UserPage extends StatelessWidget {
             // Input de range de data
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: TextField(
                     decoration: InputDecoration(
                       hintText: '01/07/2022 - 05/12/2022',
-                      border: OutlineInputBorder(),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4),
+                        borderSide: BorderSide(
+                          color: Colors
+                              .grey, // Borda quando o campo não está em foco
+                          width: 1.0,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4),
+                        borderSide: BorderSide(
+                          color: Colors.grey,
+                          width: 1.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4),
+                        borderSide: BorderSide(
+                          color: Colors
+                              .blueAccent, // Borda quando o campo está em foco
+                          width: 2.0,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -111,9 +133,10 @@ class UserPage extends StatelessWidget {
                   onPressed: () {
                     // Função de busca
                   },
-                )
+                ),
               ],
             ),
+
             const SizedBox(height: 20),
 
             // Tabela de horas

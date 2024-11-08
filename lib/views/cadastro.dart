@@ -35,16 +35,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       // Armazenar informações adicionais no Firestore
-      await _firestore.collection('Users').doc(userCredential.user!.uid).set({
+      await _firestore
+          .collection('employees')
+          .doc(userCredential.user!.uid)
+          .set({
         'name': fullNameController.text.trim(),
         'email': _emailController.text.trim(),
-        'cpf': cpfController.text.trim(),
-        'telefone': phoneController.text.trim(),
+        'document': cpfController.text.trim(),
+        'phone': phoneController.text.trim(),
         'companyId': companyCodeController.text.trim(),
         'createdAt': FieldValue.serverTimestamp(),
         'role': 'employee',
         'workingPattern': selectedWorkingPattern,
-        'uid': userCredential.user!.uid,
       });
 
       // Mensagem de sucesso e redirecionamento
@@ -226,6 +228,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
+                    filled: true,
                     fillColor: Colors.grey[200],
                   ),
                 ),
@@ -235,23 +238,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 DropdownButtonFormField<String>(
                   value: selectedWorkingPattern,
                   onChanged: (String? newValue) {
-                    // Atualiza o estado com a nova seleção
                     setState(() {
                       selectedWorkingPattern = newValue;
                     });
                   },
                   items: const [
                     DropdownMenuItem(
-                      value: 'fulltime',
-                      child: Text('Escala cheia (8 horas)'),
+                      value: 'clt',
+                      child: Text('CLT'),
                     ),
                     DropdownMenuItem(
-                      value: 'halftime',
-                      child: Text('Meia escala (4 horas)'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'free',
-                      child: Text('Escala livre'),
+                      value: 'estagio',
+                      child: Text('Estágio'),
                     ),
                   ],
                   decoration: InputDecoration(

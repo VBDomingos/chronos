@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:project/models/companyWorkingPattern.dart';
 import 'package:project/models/usermodel.dart';
 import 'package:project/views/config_screen.dart';
 import 'package:project/views/tela_login.dart';
@@ -22,7 +23,6 @@ class _HeaderState extends State<Header> {
   @override
   void initState() {
     super.initState();
-    userModel = Provider.of<UserModel>(context, listen: false);
     _fetchUserData();
   }
 
@@ -33,14 +33,21 @@ class _HeaderState extends State<Header> {
       if (user != null) {
         DocumentSnapshot<Map<String, dynamic>> userDoc = await FirebaseFirestore
             .instance
-            .collection('Users')
+            .collection('employees')
             .doc(user.uid)
             .get();
 
         if (userDoc.exists) {
-          userModel?.setUserData(userDoc.data()?['name']);
-          print('asddas');
-          print(userModel?.fullName);
+          final name = userDoc.data()?['name'];
+          final companyId = userDoc.data()?['companyId'];
+          final workingPattern = userDoc.data()?['workingPattern'];
+
+          Provider.of<UserModel>(context, listen: false)
+              .setUserData(name, user.uid, companyId, workingPattern);
+          Provider.of<CompanyWorkingPatternModel>(context, listen: false)
+              .setWorkingPattern(companyId!, workingPattern!);
+
+          setState(() {});
         }
       }
     } catch (e) {
@@ -50,6 +57,9 @@ class _HeaderState extends State<Header> {
 
   @override
   Widget build(BuildContext context) {
+    // Escuta mudanças no `UserModel`
+    userModel = Provider.of<UserModel>(context);
+
     return AppBar(
       flexibleSpace: Container(
         color: const Color.fromARGB(255, 255, 255, 255),
@@ -86,8 +96,7 @@ class _HeaderState extends State<Header> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const ConfigPage(),
-                    settings: const RouteSettings(
-                        name: 'ConfigPage'), // Define o nome da rota
+                    settings: const RouteSettings(name: 'ConfigPage'),
                   ),
                 );
               }
@@ -98,7 +107,7 @@ class _HeaderState extends State<Header> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              // Função de refresh aqui
+              _fetchUserData(); // Função de refresh
             },
           ),
       ],

@@ -7,9 +7,14 @@ import '../widgets/dotw_indicator.dart';
 import '../widgets/header.dart';
 import '../widgets/bottom_nav_bar.dart';
 
-class UserScreen extends StatelessWidget {
+class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
 
+  @override
+  _UserScreenState createState() => _UserScreenState();
+}
+
+class _UserScreenState extends State<UserScreen> {
   @override
   Widget build(BuildContext context) {
     final workingPattern = Provider.of<CompanyWorkingPatternModel>(context);
@@ -43,7 +48,9 @@ class UserScreen extends StatelessWidget {
                           border: Border.all(color: Colors.green, width: 2.0),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Text(workingPattern.firstEntry ?? 'N/A'),
+                        child: Text((workingPattern.userWorkingPattern
+                                as Map<String, dynamic>?)?['arrivalTime'] ??
+                            'N/A'),
                       ),
                     ],
                   ),
@@ -60,7 +67,9 @@ class UserScreen extends StatelessWidget {
                           border: Border.all(color: Colors.grey, width: 2.0),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Text(workingPattern.firstExit ?? 'N/A'),
+                        child: Text((workingPattern.userWorkingPattern
+                                as Map<String, dynamic>?)?['break'] ??
+                            'N/A'),
                       ),
                     ],
                   ),
@@ -77,7 +86,7 @@ class UserScreen extends StatelessWidget {
                           border: Border.all(color: Colors.yellow, width: 2.0),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Text(workingPattern.secondEntry ?? 'N/A'),
+                        child: Text(workingPattern.breakReturn ?? 'N/A'),
                       ),
                     ],
                   ),
@@ -94,7 +103,9 @@ class UserScreen extends StatelessWidget {
                           border: Border.all(color: Colors.red, width: 2.0),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Text(workingPattern.secondExit ?? 'N/A'),
+                        child: Text((workingPattern.userWorkingPattern
+                                as Map<String, dynamic>?)?['departureTime'] ??
+                            'N/A'),
                       ),
                     ],
                   ),
@@ -167,7 +178,9 @@ class UserScreen extends StatelessWidget {
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                       const Icon(Icons.schedule, size: 40),
                       const SizedBox(width: 10),
-                      Text(DateFormat('H:mm').format(DateTime.now()),
+                      Text(
+                          DateFormat('H:mm').format(DateTime.now()
+                              .subtract(const Duration(hours: 3))),
                           style: const TextStyle(
                               fontSize: 40, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 16),
@@ -177,7 +190,8 @@ class UserScreen extends StatelessWidget {
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            /*userPoint.addWorkingTime(context, 'entry');*/
+                            userPoint.confirmAndAddWorkingTime(
+                                context, 'entrada');
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
@@ -194,7 +208,8 @@ class UserScreen extends StatelessWidget {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            /*userPoint.addWorkingTime(context, 'exit');*/
+                            userPoint.confirmAndAddWorkingTime(
+                                context, 'saida');
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.red,

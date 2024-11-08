@@ -5,45 +5,22 @@ import 'package:provider/provider.dart';
 
 class UserModel with ChangeNotifier {
   String? _fullName;
+  String? _uid;
+  String? _companyId;
+  String? _workingPattern;
 
   String? get fullName => _fullName;
+  String? get uid => _uid;
+  String? get companyId => _companyId;
+  String? get workingPattern => _workingPattern;
 
-  void setUserData(String? name) {
-    print(name);
+  void setUserData(
+      String? name, String? uid, String? companyId, String? workingPattern) {
     _fullName = name;
+    _uid = uid;
+    _companyId = companyId;
+    _workingPattern = workingPattern;
+
     notifyListeners();
   }
-
-  /*Future<void> setCompanyWorkingTime(BuildContext context) async {
-    try {
-      DocumentSnapshot<Map<String, dynamic>> companyWorkingTimeData =
-          await FirebaseFirestore.instance
-              .collection('company_working_pattern')
-              .doc(_companyId)
-              .get();
-
-      print(companyWorkingTimeData.data()?['cedo']);
-      print(_workingPattern);
-
-      if (companyWorkingTimeData.exists) {
-        switch (_workingPattern) {
-          case "cedo":
-            Provider.of<CompanyWorkingPatternModel>(context, listen: false)
-                .setWorkingPattern(companyWorkingTimeData.data()?['cedo']);
-            break;
-          case "halftime":
-            Provider.of<CompanyWorkingPatternModel>(context, listen: false)
-                .setWorkingPattern(companyWorkingTimeData.data()?['halftime']);
-            break;
-          case "free":
-            Provider.of<CompanyWorkingPatternModel>(context, listen: false)
-                .setWorkingPattern(companyWorkingTimeData.data()?['fulltime']);
-            break;
-          default:
-        }
-      }
-    } catch (e) {
-      print('Erro ao buscar dados da empresa: $e');
-    }
-  }*/
 }

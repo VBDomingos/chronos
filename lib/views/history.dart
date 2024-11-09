@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:project/views/correcao_ponto.dart';
 import 'package:project/firebaseoptions.dart';
+import 'package:project/widgets/horasWidget.dart';
 import 'package:project/views/tela_login.dart';
 import 'package:project/views/user_screen.dart';
 import 'package:project/widgets/bottom_nav_bar.dart';
@@ -32,45 +33,6 @@ void history() async {
 }
 
 class UserPage extends StatelessWidget {
-  final List<Map<String, String>> hoursData = [
-    {
-      "data": "01/07/2024",
-      "previstas": "08:50",
-      "trabalhadas": "07:45",
-      "intervalo": "00:15",
-      "saldo": "00:45",
-    },
-    {
-      "data": "02/07/2024",
-      "previstas": "08:00",
-      "trabalhadas": "08:00",
-      "intervalo": "00:30",
-      "saldo": "00:00",
-    },
-    {
-      "data": "03/07/2024",
-      "previstas": "08:00",
-      "trabalhadas": "06:45",
-      "intervalo": "01:00",
-      "saldo": "01:15",
-    },
-    {
-      "data": "02/07/2024",
-      "previstas": "08:00",
-      "trabalhadas": "08:00",
-      "intervalo": "00:30",
-      "saldo": "00:00",
-    },
-    {
-      "data": "03/07/2024",
-      "previstas": "08:00",
-      "trabalhadas": "06:45",
-      "intervalo": "01:00",
-      "saldo": "01:15",
-    },
-    // Adicione mais linhas conforme necessário
-  ];
-
   UserPage({super.key});
 
   @override
@@ -223,7 +185,7 @@ class UserPage extends StatelessWidget {
                 ]),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 17),
 
             // Tabela com dados de horas
             const Text(
@@ -231,8 +193,10 @@ class UserPage extends StatelessWidget {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             Expanded(
-              child:
-                  HoursTable(hoursData: hoursData), // Usando o widget de tabela
+              child: HorasWidget(
+                dataInicial: "01/11/2024", // Data inicial no formato DD/MM/AAAA
+                dataFinal: "10/11/2024", // Data final no formato DD/MM/AAAA
+              ), // Usando o widget de tabela
             ),
           ],
         ),
@@ -240,120 +204,6 @@ class UserPage extends StatelessWidget {
 
       // Rodapé com botões
       bottomNavigationBar: const CustomBottomNavigationBar(),
-    );
-  }
-}
-
-class HoursTable extends StatelessWidget {
-  final List<Map<String, String>> hoursData;
-
-  const HoursTable({super.key, required this.hoursData});
-  // Simulação de dados, como se viessem do Firebase
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Table(
-            columnWidths: const {
-              0: FlexColumnWidth(2),
-              1: FlexColumnWidth(2),
-              2: FlexColumnWidth(2),
-              3: FlexColumnWidth(2),
-              4: FlexColumnWidth(2),
-              5: FlexColumnWidth(2), // Coluna para o ícone de edição
-            },
-            border: TableBorder.all(color: Colors.grey), // Borda na tabela
-            children: [
-              // Cabeçalho da tabela
-              TableRow(children: [
-                Container(
-                  padding: const EdgeInsets.all(8.0),
-                  child: const Text(
-                    'Data',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(8.0),
-                  child: const Text(
-                    'Previstas',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(8.0),
-                  child: const Text(
-                    'Trabalhadas',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(8.0),
-                  child: const Text(
-                    'Intervalo',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(8.0),
-                  child: const Text(
-                    'Saldo',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(8.0),
-                ),
-              ]),
-              // Adicionando linhas dinamicamente a partir do array de dados
-              ...List.generate(hoursData.length, (index) {
-                final item = hoursData[index];
-                return TableRow(children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(item["data"] ?? ""),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(item["previstas"] ?? ""),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(item["trabalhadas"] ?? ""),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(item["intervalo"] ?? ""),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(item["saldo"] ?? ""),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () {
-                        // Ação ao clicar no ícone de edição
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => CorrecaoPontoScreen(),
-                              settings: const RouteSettings(
-                                  name: 'CorrecaoPontoScreen')),
-                        );
-                      },
-                    ),
-                  ),
-                ]);
-              }),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

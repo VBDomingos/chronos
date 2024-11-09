@@ -117,4 +117,68 @@ class UserPointModel with ChangeNotifier {
       await addWorkingTime(context, type);
     }
   }
+
+  Future<void> confirmAndRequestChangeWorkingTime(BuildContext context,
+      reasonController, timeController, hora, originalKey) async {
+    bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmar Solicitação'),
+          content: Text('Tem certeza de que deseja solicitar a mudança?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // Usuário cancelou
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // Usuário confirmou
+              },
+              child: Text('Confirmar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    // Se o usuário confirmou, chama a função para registrar o ponto
+    if (confirm == true) {
+      await requestChangeWorkingTime(
+          context, reasonController, timeController, hora, originalKey);
+    }
+  }
+
+  Future<void> requestChangeWorkingTime(
+      context, reasonController, timeController, hora, originalKey) async {
+    if (reasonController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Justificativa é obrigatória.')),
+      );
+      return;
+    }
+    UserModel userModel = Provider.of<UserModel>(context, listen: false);
+
+    final solicitationsRef = FirebaseFirestore.instance
+        .collection('employees')
+        .doc(userModel.uid) // Replace with actual user ID
+        .collection('solicitations');
+
+    await solicitationsRef.add({
+      'newValue': timeController.text,
+      'previousValue': hora,
+      'reason': reasonController.text,
+      'requestField': originalKey,
+      'status': 'pending',
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Solicitação enviada com sucesso!')),
+    );
+
+    Navigator.pop(context);
+  }
 }

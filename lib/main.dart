@@ -14,7 +14,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => CompanyWorkingPatternModel(),
+          create: (context) => CompanyWorkingPatternModel(),
         ),
         ChangeNotifierProvider(
           create: (context) => UserModel(),

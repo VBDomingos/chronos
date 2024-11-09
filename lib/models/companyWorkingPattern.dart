@@ -6,14 +6,16 @@ class CompanyWorkingPatternModel with ChangeNotifier {
   Object? _userWorkingPattern;
 
   Object? get userWorkingPattern => _userWorkingPattern;
-  String? get breakReturn => _userWorkingPattern != null
+  String? get breakReturn => _userWorkingPattern != null &&
+          (_userWorkingPattern as Map<String, dynamic>).containsKey('break')
       ? incrementHour((_userWorkingPattern as Map<String, dynamic>)['break'])
       : null;
   String? get journeyDuration => _userWorkingPattern != null
       ? setJourneyDuration(
           (_userWorkingPattern as Map<String, dynamic>)['arrivalTime'],
           (_userWorkingPattern as Map<String, dynamic>)['departureTime'],
-          (_userWorkingPattern as Map<String, dynamic>)['totalBreakTime'])
+          (_userWorkingPattern as Map<String, dynamic>)['totalBreakTime'] ??
+              '0')
       : null;
   final now = DateTime.now();
 

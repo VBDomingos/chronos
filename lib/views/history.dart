@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:project/views/correcao_ponto.dart';
 import 'package:project/firebaseoptions.dart';
+import 'package:project/widgets/dateRangePicker.dart';
 import 'package:project/widgets/horasWidget.dart';
 import 'package:project/views/tela_login.dart';
 import 'package:project/views/user_screen.dart';
@@ -10,30 +11,52 @@ import '../widgets/dotw_indicator.dart';
 import '../widgets/header.dart';
 
 void history() async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(MaterialApp(
-    theme: ThemeData(
-      scaffoldBackgroundColor: Colors.white,
-      primaryColor: Colors.white,
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.grey[300], // Global background color
-          foregroundColor: Colors.black, // Global text and icon color
-        ),
-      ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.white, // Cor do AppBar
-      ),
-      bottomAppBarTheme: const BottomAppBarTheme(
-        color: Colors.white, // Cor do BottomAppBar
-      ),
-    ),
-    home: LoginScreen(),
-  ));
+  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // runApp(MaterialApp(
+  //   theme: ThemeData(
+  //     scaffoldBackgroundColor: Colors.white,
+  //     primaryColor: Colors.white,
+  //     elevatedButtonTheme: ElevatedButtonThemeData(
+  //       style: ElevatedButton.styleFrom(
+  //         backgroundColor: Colors.grey[300], // Global background color
+  //         foregroundColor: Colors.black, // Global text and icon color
+  //       ),
+  //     ),
+  //     appBarTheme: const AppBarTheme(
+  //       backgroundColor: Colors.white, // Cor do AppBar
+  //     ),
+  //     bottomAppBarTheme: const BottomAppBarTheme(
+  //       color: Colors.white, // Cor do BottomAppBar
+  //     ),
+  //   ),
+  //   home: LoginScreen(),
+  // ));
 }
 
-class UserPage extends StatelessWidget {
-  UserPage({super.key});
+class UserPage extends StatefulWidget {
+  @override
+  _UserPage createState() => _UserPage();
+}
+
+class _UserPage extends State<UserPage> {
+  Map<String, String> selectedDateRange = {
+    'dataInicial': '',
+    'dataFinal': '',
+  };
+
+  void _updateDateRange(String dateRange) {
+    setState(() {
+      selectedDateRange = transformarData(dateRange);
+    });
+  }
+
+  Map<String, String> transformarData(String range) {
+    List<String> datas = range.split(' - ');
+    return {
+      'dataInicial': datas[0],
+      'dataFinal': datas[1],
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,46 +81,7 @@ class UserPage extends StatelessWidget {
             const SizedBox(height: 10),
 
             // Input de range de data
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: '01/07/2022 - 05/12/2022',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4),
-                        borderSide: BorderSide(
-                          color: Colors
-                              .grey, // Borda quando o campo não está em foco
-                          width: 1.0,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4),
-                        borderSide: BorderSide(
-                          color: Colors.grey,
-                          width: 1.0,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(4),
-                        borderSide: BorderSide(
-                          color: Colors
-                              .blueAccent, // Borda quando o campo está em foco
-                          width: 2.0,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () {
-                    // Função de busca
-                  },
-                ),
-              ],
-            ),
+            DateRangePicker(onDateRangeSelected: _updateDateRange),
 
             const SizedBox(height: 20),
 
@@ -194,9 +178,9 @@ class UserPage extends StatelessWidget {
             ),
             Expanded(
               child: HorasWidget(
-                dataInicial: "01/11/2024", // Data inicial no formato DD/MM/AAAA
-                dataFinal: "10/11/2024", // Data final no formato DD/MM/AAAA
-              ), // Usando o widget de tabela
+                dataInicial: selectedDateRange['dataInicial'] ?? '',
+                dataFinal: selectedDateRange['dataFinal'] ?? '',
+              ),
             ),
           ],
         ),

@@ -229,7 +229,7 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
                 fillColor: Colors.white,
               ),
               maxLines: 3,
-              maxLength: 50,
+              maxLength: 150,
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(

@@ -26,6 +26,15 @@ class _HorasWidgetState extends State<HorasWidget> {
     _initializeUserIdAndFetchRecords();
   }
 
+  @override
+  void didUpdateWidget(covariant HorasWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.dataInicial != widget.dataInicial ||
+        oldWidget.dataFinal != widget.dataFinal) {
+      _fetchTimeRecords();
+    }
+  }
+
   Future<void> _initializeUserIdAndFetchRecords() async {
     User? user = FirebaseAuth.instance.currentUser;
 

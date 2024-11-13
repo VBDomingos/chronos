@@ -187,47 +187,53 @@ class _UserScreenState extends State<UserScreen> {
                               fontSize: 40, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 16),
                     ]),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            userPoint.confirmAndAddWorkingTime(
-                                context, 'entrada');
-                          },
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 16.0, horizontal: 32.0),
-                              minimumSize: const Size(150, 50)),
-                          child: const Text(
-                            "Entrada",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
+                    userPoint.loadingPoint
+                        ? const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  userPoint.confirmAndAddWorkingTime(
+                                      context, 'entrada');
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 16.0, horizontal: 32.0),
+                                  minimumSize: const Size(150, 50),
+                                ),
+                                child: const Text(
+                                  "Entrada",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  userPoint.confirmAndAddWorkingTime(
+                                      context, 'saida');
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 16.0, horizontal: 32.0),
+                                  minimumSize: const Size(150, 50),
+                                ),
+                                child: const Text(
+                                  "Saída",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            userPoint.confirmAndAddWorkingTime(
-                                context, 'saida');
-                          },
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 16.0, horizontal: 32.0),
-                              minimumSize: const Size(150, 50)),
-                          child: const Text(
-                            "Saída",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
                     const SizedBox(height: 20),
                   ],
                 ),

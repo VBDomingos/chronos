@@ -71,10 +71,11 @@ class _HorasWidgetState extends State<HorasWidget> {
             };
 
             doc.data().forEach((key, value) {
-              if (key.startsWith('entrada-')) {
+              if (key.startsWith('entrada-') && value is Map<String, dynamic>) {
                 String entryNumber = key.split('-')[1];
-                String entryTime = value.toString();
-                String? exitTime = doc.data()['saida-$entryNumber']?.toString();
+                String entryTime = value['time']?.toString() ?? '---';
+                String? exitTime =
+                    doc.data()['saida-$entryNumber']?['time']?.toString();
 
                 record['entries'].add({
                   'entrada': entryTime,

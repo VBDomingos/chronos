@@ -10,29 +10,6 @@ import 'package:project/widgets/bottom_nav_bar.dart';
 import '../widgets/dotw_indicator.dart';
 import '../widgets/header.dart';
 
-void history() async {
-  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  // runApp(MaterialApp(
-  //   theme: ThemeData(
-  //     scaffoldBackgroundColor: Colors.white,
-  //     primaryColor: Colors.white,
-  //     elevatedButtonTheme: ElevatedButtonThemeData(
-  //       style: ElevatedButton.styleFrom(
-  //         backgroundColor: Colors.grey[300], // Global background color
-  //         foregroundColor: Colors.black, // Global text and icon color
-  //       ),
-  //     ),
-  //     appBarTheme: const AppBarTheme(
-  //       backgroundColor: Colors.white, // Cor do AppBar
-  //     ),
-  //     bottomAppBarTheme: const BottomAppBarTheme(
-  //       color: Colors.white, // Cor do BottomAppBar
-  //     ),
-  //   ),
-  //   home: LoginScreen(),
-  // ));
-}
-
 class UserPage extends StatefulWidget {
   @override
   _UserPage createState() => _UserPage();

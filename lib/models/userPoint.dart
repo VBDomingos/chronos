@@ -1,11 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:project/models/usermodel.dart';
 import 'package:provider/provider.dart';
 
 class UserPointModel with ChangeNotifier {
+  bool loadingPoint = false;
+
   Future<void> addWorkingTime(BuildContext context, String type) async {
+    this.loadingPoint = true;
+    notifyListeners();
     UserModel userModel = Provider.of<UserModel>(context, listen: false);
 
     // Formata a data para o formato desejado
@@ -15,6 +20,17 @@ class UserPointModel with ChangeNotifier {
         .format(now.subtract(const Duration(hours: 3))); // Ex: "07:12"
 
     try {
+      // Solicita a permissão de localização, se necessário
+      LocationPermission permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        throw Exception("Permissão de localização negada.");
+      }
+
+      // Obtenha a localização atual
+      Position currentPosition = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
       // Referência para a coleção de registros de tempo do usuário
       final timeRecordsRef = FirebaseFirestore.instance
           .collection('employees')
@@ -42,16 +58,22 @@ class UserPointModel with ChangeNotifier {
       if (docSnapshot.exists) {
         final data = docSnapshot.data();
         if (data != null) {
-          // Filtra apenas as chaves que correspondem ao tipo "entrada-" ou "saida-"
-          final filteredKeys =
-              data.keys.where((key) => key.startsWith(type)).toList();
+          final filteredKeys = data.keys
+              .where((key) =>
+                  key.startsWith("entrada-") || key.startsWith("saida-"))
+              .toList();
 
           if (filteredKeys.isNotEmpty) {
-            // Ordena as chaves para obter o último registro
-            filteredKeys.sort();
+            // Ordena as chaves com base no campo de horário dentro de cada registro
+            filteredKeys.sort((a, b) {
+              final timeA = data[a]['time'] as String;
+              final timeB = data[b]['time'] as String;
+
+              return timeA.compareTo(timeB);
+            });
+
             final lastEntry = filteredKeys.last;
 
-            // Se o último registro for do mesmo tipo, lança um erro
             if (lastEntry.startsWith(type)) {
               throw Exception('Erro: Já existe um registro recente de $type.');
             }
@@ -59,7 +81,6 @@ class UserPointModel with ChangeNotifier {
         }
       }
 
-      // Conta quantas entradas ou saídas já existem no documento
       int count = 1;
       if (docSnapshot.exists) {
         final data = docSnapshot.data();
@@ -69,19 +90,29 @@ class UserPointModel with ChangeNotifier {
         }
       }
 
+      // Atualiza o documento no Firestore com o horário e localização da marcação
       await docRef.update({
-        '$type-$count': timeKey,
+        '$type-$count': {
+          'time': timeKey,
+          'latitude': currentPosition.latitude,
+          'longitude': currentPosition.longitude,
+        }
       });
 
-      print('$type-$count adicionado com sucesso na data $dateKey!');
+      print(
+          '$type-$count adicionado com sucesso na data $dateKey com localização!');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Ponto registrado com sucesso!')),
       );
+      this.loadingPoint = false;
+      notifyListeners();
     } catch (e) {
       print('Erro ao adicionar ponto de entrada/saída: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erro ao adicionar ponto: ${e.toString()}')),
       );
+      this.loadingPoint = false;
+      notifyListeners();
     }
   }
 

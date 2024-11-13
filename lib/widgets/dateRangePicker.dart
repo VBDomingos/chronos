@@ -104,7 +104,6 @@ class _DateRangePickerState extends State<DateRangePicker> {
             controller: _dateController,
             readOnly: true,
             decoration: InputDecoration(
-              hintText: '01/07/2022 - 05/12/2022',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(4),
                 borderSide: BorderSide(

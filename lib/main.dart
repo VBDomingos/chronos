@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:project/firebaseoptions.dart';
+import 'package:project/models/adm_model.dart';
 import 'package:project/models/companyWorkingPattern.dart';
 import 'package:project/models/userPoint.dart';
 import 'package:project/models/usermodel.dart';
@@ -21,6 +22,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => UserPointModel(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AdmModel('companyId'),
         ),
       ],
       child: ChronosPointApp(),

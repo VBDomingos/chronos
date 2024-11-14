@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:project/views/history.dart';
 import 'package:project/views/user_screen.dart';
 import 'package:project/views/config_screen.dart';
+import 'package:project/views/adm_screen.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   const CustomBottomNavigationBar({
@@ -38,7 +39,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => UserPage(),
+                    builder: (context) => AdmScreen(),
                     settings: const RouteSettings(
                         name: 'UserPage'), // Define o nome da rota
                   ),

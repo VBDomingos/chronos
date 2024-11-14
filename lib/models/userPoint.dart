@@ -194,7 +194,7 @@ class UserPointModel with ChangeNotifier {
 
     final solicitationsRef = FirebaseFirestore.instance
         .collection('employees')
-        .doc(userModel.uid) // Replace with actual user ID
+        .doc(userModel.uid)
         .collection('solicitations');
 
     await solicitationsRef.add({

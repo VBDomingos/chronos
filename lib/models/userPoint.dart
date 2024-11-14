@@ -7,6 +7,10 @@ import 'package:provider/provider.dart';
 
 class UserPointModel with ChangeNotifier {
   bool loadingPoint = false;
+  String? balanceMonthHours;
+  String? balanceFilterWorkedHours;
+  String? balanceFilterExpectedHours;
+  String? balanceFilterHours;
 
   Future<void> addWorkingTime(BuildContext context, String type) async {
     this.loadingPoint = true;
@@ -85,7 +89,6 @@ class UserPointModel with ChangeNotifier {
       if (docSnapshot.exists) {
         final data = docSnapshot.data();
         if (data != null) {
-          // Conta quantas chaves começam com "entrada-" ou "saida-" dependendo do tipo
           count = data.keys.where((key) => key.startsWith('$type-')).length + 1;
         }
       }
@@ -96,6 +99,7 @@ class UserPointModel with ChangeNotifier {
           'time': timeKey,
           'latitude': currentPosition.latitude,
           'longitude': currentPosition.longitude,
+          'solicitationsOpen': false,
         }
       });
 
@@ -150,7 +154,7 @@ class UserPointModel with ChangeNotifier {
   }
 
   Future<void> confirmAndRequestChangeWorkingTime(BuildContext context,
-      reasonController, timeController, hora, originalKey) async {
+      reasonController, timeController, date, hora, originalKey) async {
     bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -178,12 +182,12 @@ class UserPointModel with ChangeNotifier {
     // Se o usuário confirmou, chama a função para registrar o ponto
     if (confirm == true) {
       await requestChangeWorkingTime(
-          context, reasonController, timeController, hora, originalKey);
+          context, reasonController, timeController, date, hora, originalKey);
     }
   }
 
-  Future<void> requestChangeWorkingTime(
-      context, reasonController, timeController, hora, originalKey) async {
+  Future<void> requestChangeWorkingTime(context, reasonController,
+      timeController, date, hora, originalKey) async {
     if (reasonController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Justificativa é obrigatória.')),
@@ -202,14 +206,208 @@ class UserPointModel with ChangeNotifier {
       'previousValue': hora,
       'reason': reasonController.text,
       'requestField': originalKey,
+      'requestFieldDate': date,
       'status': 'pending',
       'timestamp': FieldValue.serverTimestamp(),
     });
+
+    final timeRecordsRef = FirebaseFirestore.instance
+        .collection('employees')
+        .doc(userModel.uid)
+        .collection('timeRecords')
+        .where('date', isEqualTo: date);
+
+    final querySnapshot = await timeRecordsRef.get();
+    for (var doc in querySnapshot.docs) {
+      await doc.reference.update({
+        '$originalKey.solicitationsOpen': true,
+      });
+    }
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Solicitação enviada com sucesso!')),
     );
 
     Navigator.pop(context);
+  }
+
+  Future<void> calculateTotalHoursWorked(
+      context, String startDate, String endDate, String type) async {
+    resetValues();
+    UserModel userModel = Provider.of<UserModel>(context, listen: false);
+    final dateFormatter = DateFormat("dd/MM/yyyy");
+
+    DateTime start = dateFormatter.parse(startDate);
+    DateTime end = dateFormatter.parse(endDate);
+
+    Duration totalWorkedDuration = Duration.zero;
+
+    // Calculate total worked hours from timeRecords
+    try {
+      QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+          .instance
+          .collection('employees')
+          .doc(userModel.uid)
+          .collection('timeRecords')
+          .where('date', isGreaterThanOrEqualTo: dateFormatter.format(start))
+          .where('date', isLessThanOrEqualTo: dateFormatter.format(end))
+          .get();
+
+      for (var doc in snapshot.docs) {
+        Map<String, dynamic> data = doc.data();
+
+        data.forEach((key, value) {
+          if (key.startsWith('entrada-') && value is Map<String, dynamic>) {
+            String entryTime = value['time'] ?? '00:00';
+            String entryNumber = key.split('-')[1];
+            String? exitTime = data['saida-$entryNumber']?['time'];
+
+            if (exitTime != null) {
+              DateTime entryDateTime =
+                  dateFormatter.parse(data['date']).add(Duration(
+                        hours: int.parse(entryTime.split(":")[0]),
+                        minutes: int.parse(entryTime.split(":")[1]),
+                      ));
+              DateTime exitDateTime =
+                  dateFormatter.parse(data['date']).add(Duration(
+                        hours: int.parse(exitTime.split(":")[0]),
+                        minutes: int.parse(exitTime.split(":")[1]),
+                      ));
+
+              Duration workedDuration = exitDateTime.difference(entryDateTime);
+              totalWorkedDuration += workedDuration;
+            }
+          }
+        });
+      }
+
+      Duration expectedMonthlyHours = await calculateExpectedMonthlyHours(
+        userModel.companyId!,
+        userModel.workingPattern!,
+        start,
+        end,
+      );
+
+      int hours = totalWorkedDuration.inHours;
+      int minutes = totalWorkedDuration.inMinutes % 60;
+      String formattedWorkedTime =
+          "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}";
+
+      int expectedHours = expectedMonthlyHours.inHours;
+      int expectedMinutes = expectedMonthlyHours.inMinutes % 60;
+      String formattedExpectedTime =
+          "${expectedHours.toString().padLeft(2, '0')}:${expectedMinutes.toString().padLeft(2, '0')}";
+
+      Duration balance = totalWorkedDuration - expectedMonthlyHours;
+      int balanceHours = balance.inHours;
+      int balanceMinutes = balance.inMinutes % 60;
+      String formattedBalance =
+          "${balanceHours.toString().padLeft(2, '0')}:${balanceMinutes.toString().padLeft(2, '0')}";
+
+      switch (type) {
+        case 'monthWorkedHours':
+          this.balanceMonthHours = formattedBalance;
+
+          break;
+        case 'filterWorkedHours':
+          this.balanceFilterWorkedHours = formattedWorkedTime;
+          this.balanceFilterExpectedHours = formattedExpectedTime;
+          this.balanceFilterHours = formattedBalance;
+          break;
+        default:
+      }
+      notifyListeners();
+    } catch (e) {
+      print("Error calculating total worked hours: $e");
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchCompanyHours(
+      String companyId, String workingPattern) async {
+    DocumentSnapshot<Map<String, dynamic>> companySnapshot =
+        await FirebaseFirestore.instance
+            .collection('companies')
+            .doc(companyId)
+            .get();
+
+    if (!companySnapshot.exists) {
+      throw Exception("Company data not found for companyId: $companyId");
+    }
+
+    Map<String, dynamic>? companyData = companySnapshot.data();
+    if (companyData == null || !companyData.containsKey('workingHours')) {
+      throw Exception("Working hours data not found for companyId: $companyId");
+    }
+
+    Map<String, dynamic> workingHours = companyData['workingHours'];
+    if (!workingHours.containsKey(workingPattern)) {
+      throw Exception(
+          "Working pattern '$workingPattern' not found in working hours for companyId: $companyId");
+    }
+
+    return workingHours[workingPattern] as Map<String, dynamic>;
+  }
+
+  Duration calculateExpectedDailyHours(Map<String, dynamic> daySchedule) {
+    String arrivalTime = daySchedule['arrivalTime'];
+    String departureTime = daySchedule['departureTime'];
+    int totalBreakTime =
+        int.tryParse(daySchedule['totalBreakTime'] ?? '0') ?? 0;
+
+    DateTime arrival = DateFormat("HH:mm").parse(arrivalTime);
+    DateTime departure = DateFormat("HH:mm").parse(departureTime);
+
+    Duration workDuration = departure.difference(arrival);
+    Duration breakDuration = Duration(hours: totalBreakTime);
+
+    return workDuration - breakDuration;
+  }
+
+  int countBusinessDays(DateTime start, DateTime end) {
+    int businessDays = 0;
+    for (DateTime date = start;
+        date.isBefore(end) || date.isAtSameMomentAs(end);
+        date = date.add(Duration(days: 1))) {
+      if (date.weekday >= DateTime.monday && date.weekday <= DateTime.friday) {
+        businessDays++;
+      }
+    }
+    return businessDays;
+  }
+
+  int countSaturdays(DateTime start, DateTime end) {
+    int saturdays = 0;
+    for (DateTime date = start;
+        date.isBefore(end) || date.isAtSameMomentAs(end);
+        date = date.add(Duration(days: 1))) {
+      if (date.weekday == DateTime.saturday) {
+        saturdays++;
+      }
+    }
+    return saturdays;
+  }
+
+  Future<Duration> calculateExpectedMonthlyHours(String companyId,
+      String workingPattern, DateTime startDate, DateTime currentDate) async {
+    Map<String, dynamic> hoursData =
+        await fetchCompanyHours(companyId, workingPattern);
+
+    Duration weekDayHours = calculateExpectedDailyHours(hoursData['weekDays']);
+    Duration saturdayHours =
+        calculateExpectedDailyHours(hoursData['weekEnd'] ?? {});
+
+    int businessDays = countBusinessDays(startDate, currentDate);
+    int saturdays = countSaturdays(startDate, currentDate);
+
+    Duration totalExpectedHours =
+        (weekDayHours * businessDays) + (saturdayHours * saturdays);
+    return totalExpectedHours;
+  }
+
+  resetValues() {
+    this.balanceFilterWorkedHours = null;
+    this.balanceFilterExpectedHours = null;
+    this.balanceFilterHours = null;
+    notifyListeners();
   }
 }

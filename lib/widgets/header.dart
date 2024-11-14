@@ -1,14 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:project/models/companyWorkingPattern.dart';
+import 'package:project/models/userPoint.dart';
 import 'package:project/models/usermodel.dart';
 import 'package:project/views/config_screen.dart';
 import 'package:project/views/tela_login.dart';
 import 'package:provider/provider.dart';
 
 class Header extends StatefulWidget implements PreferredSizeWidget {
-  const Header({super.key});
+  final bool loading;
+
+  const Header(this.loading, {super.key});
 
   @override
   _HeaderState createState() => _HeaderState();
@@ -23,7 +27,9 @@ class _HeaderState extends State<Header> {
   @override
   void initState() {
     super.initState();
-    _fetchUserData();
+    if (widget.loading) {
+      _fetchUserData();
+    }
   }
 
   Future<void> _fetchUserData() async {
@@ -46,8 +52,13 @@ class _HeaderState extends State<Header> {
               .setUserData(name, user.uid, companyId, workingPattern);
           Provider.of<CompanyWorkingPatternModel>(context, listen: false)
               .setWorkingPattern(companyId!, workingPattern!);
-
-          setState(() {});
+          setState(() {}); // Refresh UI with updated data
+          final today = DateFormat('dd/MM/yyyy').format(DateTime.now());
+          final firstMonthDay = DateFormat('dd/MM/yyyy').format(
+              DateTime.now().subtract(Duration(days: DateTime.now().day - 1)));
+          Provider.of<UserPointModel>(context, listen: false)
+              .calculateTotalHoursWorked(
+                  context, firstMonthDay, today, 'monthWorkedHours');
         }
       }
     } catch (e) {
@@ -57,7 +68,6 @@ class _HeaderState extends State<Header> {
 
   @override
   Widget build(BuildContext context) {
-    // Escuta mudanças no `UserModel`
     userModel = Provider.of<UserModel>(context);
 
     return AppBar(
@@ -107,13 +117,10 @@ class _HeaderState extends State<Header> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              _fetchUserData(); // Função de refresh
+              _fetchUserData();
             },
           ),
       ],
     );
   }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

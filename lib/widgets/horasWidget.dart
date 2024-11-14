@@ -49,7 +49,9 @@ class _HorasWidgetState extends State<HorasWidget> {
   }
 
   Future<void> _fetchTimeRecords() async {
-    if (userId == null) return;
+    if (userId == null ||
+        widget.dataFinal.isEmpty ||
+        widget.dataInicial.isEmpty) return;
 
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
@@ -67,20 +69,28 @@ class _HorasWidgetState extends State<HorasWidget> {
             Map<String, dynamic> record = {
               'id': doc.id,
               'date': doc['date'],
-              'entries': <Map<String, String>>[],
+              'entries': <Map<String, dynamic>>[],
             };
 
             doc.data().forEach((key, value) {
               if (key.startsWith('entrada-') && value is Map<String, dynamic>) {
                 String entryNumber = key.split('-')[1];
                 String entryTime = value['time']?.toString() ?? '---';
+                bool entrySolicitationsOpen =
+                    value['solicitationsOpen'] ?? false;
                 String? exitTime =
                     doc.data()['saida-$entryNumber']?['time']?.toString();
+                bool exitSolicitationsOpen = doc.data()['saida-$entryNumber']
+                        ?['solicitationsOpen'] ??
+                    false;
 
                 record['entries'].add({
                   'entrada': entryTime,
                   'entrada_key': key,
+                  'entrada_solicitationsOpen': entrySolicitationsOpen,
                   if (exitTime != null && exitTime != '---') 'saida': exitTime,
+                  if (exitTime != null && exitTime != '---')
+                    'saida_solicitationsOpen': exitSolicitationsOpen,
                 });
               }
             });
@@ -134,7 +144,7 @@ class _HorasWidgetState extends State<HorasWidget> {
     );
   }
 
-  Widget _buildDiaTile(String date, List<Map<String, String>> entries) {
+  Widget _buildDiaTile(String date, List<Map<String, dynamic>> entries) {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey[200]!),
@@ -147,10 +157,20 @@ class _HorasWidgetState extends State<HorasWidget> {
           return Column(
             children: [
               _buildHoraRow(
-                  entry['entrada']!, "Entrada", date, entry['entrada_key']!),
+                entry['entrada']!,
+                "Entrada",
+                date,
+                entry['entrada_key']!,
+                entry['entrada_solicitationsOpen'] ?? false,
+              ),
               if (entry.containsKey('saida'))
                 _buildHoraRow(
-                    entry['saida']!, "Saída", date, entry['entrada_key']!),
+                  entry['saida']!,
+                  "Saída",
+                  date,
+                  entry['entrada_key']!,
+                  entry['saida_solicitationsOpen'] ?? false,
+                ),
             ],
           );
         }).toList(),
@@ -158,8 +178,8 @@ class _HorasWidgetState extends State<HorasWidget> {
     );
   }
 
-  Widget _buildHoraRow(
-      String hora, String tipo, String date, String originalKey) {
+  Widget _buildHoraRow(String hora, String tipo, String date,
+      String originalKey, bool solicitationsOpen) {
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -169,16 +189,23 @@ class _HorasWidgetState extends State<HorasWidget> {
       child: ListTile(
         leading: Icon(
           tipo == "Entrada" ? Icons.circle : Icons.circle,
-          color: tipo == "Entrada" ? Colors.green : Colors.red,
+          color: solicitationsOpen
+              ? Colors.yellow
+              : (tipo == "Entrada" ? Colors.green : Colors.red),
         ),
         title: Text("$hora - $tipo"),
-        trailing: IconButton(
-          icon: Icon(Icons.edit),
-          onPressed: () {
-            _navigateToCorrecaoPontoScreen(context,
-                tipo: tipo, date: date, hora: hora, originalKey: originalKey);
-          },
-        ),
+        trailing: !solicitationsOpen
+            ? IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () {
+                  _navigateToCorrecaoPontoScreen(context,
+                      tipo: tipo,
+                      date: date,
+                      hora: hora,
+                      originalKey: originalKey);
+                },
+              )
+            : null,
       ),
     );
   }

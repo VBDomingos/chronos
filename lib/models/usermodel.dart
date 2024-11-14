@@ -1,7 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
-import 'package:project/models/companyWorkingPattern.dart';
-import 'package:provider/provider.dart';
 
 class UserModel with ChangeNotifier {
   String? _fullName;

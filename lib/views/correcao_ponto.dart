@@ -104,7 +104,7 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
   Widget build(BuildContext context) {
     final userPoint = Provider.of<UserPointModel>(context);
     return Scaffold(
-      appBar: Header(),
+      appBar: Header(false),
       resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -238,6 +238,7 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
                     context,
                     _reasonController,
                     _timeController,
+                    widget.date,
                     widget.hora,
                     widget.originalKey);
               },

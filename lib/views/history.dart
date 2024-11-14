@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:project/models/userPoint.dart';
 import 'package:project/views/correcao_ponto.dart';
 import 'package:project/firebaseoptions.dart';
 import 'package:project/widgets/dateRangePicker.dart';
@@ -7,6 +8,7 @@ import 'package:project/widgets/horasWidget.dart';
 import 'package:project/views/tela_login.dart';
 import 'package:project/views/user_screen.dart';
 import 'package:project/widgets/bottom_nav_bar.dart';
+import 'package:provider/provider.dart';
 import '../widgets/dotw_indicator.dart';
 import '../widgets/header.dart';
 
@@ -25,6 +27,13 @@ class _UserPage extends State<UserPage> {
     setState(() {
       selectedDateRange = transformarData(dateRange);
     });
+    // Obtenha o UserPointModel do Provider e chame a função desejada
+    final userPoint = Provider.of<UserPointModel>(context, listen: false);
+    userPoint.calculateTotalHoursWorked(
+        context,
+        selectedDateRange['dataInicial']!,
+        selectedDateRange['dataFinal']!,
+        'filterWorkedHours');
   }
 
   Map<String, String> transformarData(String range) {
@@ -37,9 +46,10 @@ class _UserPage extends State<UserPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userPoint = Provider.of<UserPointModel>(context);
     return Scaffold(
       backgroundColor: Colors.white, // Define o fundo como branco
-      appBar: Header(),
+      appBar: Header(false),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -81,7 +91,8 @@ class _UserPage extends State<UserPage> {
                           Border.all(color: Colors.grey), // Adiciona a borda
                     ),
                     padding: const EdgeInsets.all(8.0),
-                    child: const Text('Período: 01/07/2022 - 05/12/2022'),
+                    child: Text(
+                        'Período: ${selectedDateRange['dataInicial'] ?? ''} - ${selectedDateRange['dataFinal'] ?? ''}'),
                   )
                 ]),
                 TableRow(children: [
@@ -95,7 +106,8 @@ class _UserPage extends State<UserPage> {
                       ),
                     ),
                     padding: const EdgeInsets.all(8.0),
-                    child: const Text('Horas Totais Previstas: 2400:00'),
+                    child: Text(
+                        'Horas Totais Previstas: ${userPoint.balanceFilterExpectedHours ?? ''}'),
                   ),
                 ]),
                 TableRow(children: [
@@ -109,21 +121,8 @@ class _UserPage extends State<UserPage> {
                       ),
                     ),
                     padding: const EdgeInsets.all(8.0),
-                    child: const Text('Horas Totais Trabalhadas: 2534:00'),
-                  ),
-                ]),
-                TableRow(children: [
-                  Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      border: Border(
-                        left: BorderSide(color: Colors.grey),
-                        right: BorderSide(color: Colors.grey),
-                        bottom: BorderSide(color: Colors.grey),
-                      ),
-                    ),
-                    padding: const EdgeInsets.all(8.0),
-                    child: const Text('Horas Totais Abonadas: 00:00'),
+                    child: Text(
+                        'Horas Totais Trabalhadas: ${userPoint.balanceFilterWorkedHours ?? ''}'),
                   ),
                 ]),
                 TableRow(children: [
@@ -141,7 +140,8 @@ class _UserPage extends State<UserPage> {
                       ),
                     ),
                     padding: const EdgeInsets.all(8.0),
-                    child: const Text('Saldo Total:134:00'),
+                    child: Text(
+                        'Saldo Total: ${userPoint.balanceFilterHours ?? ''}'),
                   ),
                 ]),
               ],

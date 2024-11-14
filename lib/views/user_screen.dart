@@ -19,9 +19,10 @@ class _UserScreenState extends State<UserScreen> {
   Widget build(BuildContext context) {
     final workingPattern = Provider.of<CompanyWorkingPatternModel>(context);
     final userPoint = Provider.of<UserPointModel>(context);
+    final today = DateFormat('MM/yyyy').format(DateTime.now());
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: Header(),
+      appBar: Header(true),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -142,7 +143,7 @@ class _UserScreenState extends State<UserScreen> {
                     const Divider(
                       color: Colors.blueGrey,
                     ),
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Column(
@@ -150,7 +151,7 @@ class _UserScreenState extends State<UserScreen> {
                           children: [
                             Text("Banco de Horas",
                                 style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text("00:20"),
+                            Text(userPoint.balanceMonthHours ?? 'N/A')
                           ],
                         ),
                         Column(
@@ -158,7 +159,7 @@ class _UserScreenState extends State<UserScreen> {
                           children: [
                             Text("Mês vigente",
                                 style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text("05/11/2024"),
+                            Text((today) ?? 'N/A'),
                           ],
                         ),
                       ],

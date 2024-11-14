@@ -23,7 +23,7 @@ class _AdmScreenState extends State<AdmScreen> {
     final userNames = admModel.getUserNames();
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: Header(),
+      appBar: Header(false),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -31,11 +31,8 @@ class _AdmScreenState extends State<AdmScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               DayoftheweekIndicator(),
-
               const SizedBox(height: 20),
-
               const SizedBox(height: 20),
-
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
@@ -47,7 +44,8 @@ class _AdmScreenState extends State<AdmScreen> {
                   children: [
                     Text(
                       "Employees in your company:",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 10),
                     ...userNames.map((name) => Text(

@@ -24,7 +24,7 @@ void main() async {
           create: (context) => UserPointModel(),
         ),
         ChangeNotifierProvider(
-          create: (context) => AdmModel('companyId'),
+          create: (context) => AdmModel(),
         ),
       ],
       child: ChronosPointApp(),

@@ -7,22 +7,19 @@ class AdmModel with ChangeNotifier {
 
   List<Map<String, dynamic>> get companyUsers => _companyUsers;
 
-  AdmModel(String companyId) {
-    _initializeUsers(companyId);
-  }
-
-  Future<void> _initializeUsers(String companyId) async {
-    await fetchUsersByCompanyId(companyId);
-  }
-
   Future<void> fetchUsersByCompanyId(String companyId) async {
     try {
       QuerySnapshot<Map<String, dynamic>> userQuery = await _firestore
-          .collection('users')
+          .collection('employees')
           .where('companyId', isEqualTo: companyId)
           .get();
 
-      _companyUsers = userQuery.docs.map((doc) => doc.data()).toList();
+      _companyUsers = userQuery.docs.map((doc) {
+        final userData = doc.data();
+        userData['id'] = doc.id; 
+        return userData;
+      }).toList();
+
       notifyListeners();
     } catch (e) {
       print("Error fetching users: $e");
@@ -31,5 +28,24 @@ class AdmModel with ChangeNotifier {
 
   List<String> getUserNames() {
     return _companyUsers.map((user) => user['name'] as String).toList();
+  }
+
+  Future<String?> getUserId(String name) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> userQuery = await _firestore
+          .collection('employees')
+          .where('name', isEqualTo: name)
+          .limit(1)
+          .get();
+
+      if (userQuery.docs.isNotEmpty) {
+        return userQuery.docs.first.id;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error retrieving user ID: $e");
+      return null;
+    }
   }
 }

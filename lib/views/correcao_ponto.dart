@@ -274,7 +274,7 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  backgroundColor: const Color.fromARGB(255, 205, 233, 255),
+                  backgroundColor: Colors.grey[400],
                 ),
                 child: Text('Aceitar Correção'),
               ),
@@ -285,7 +285,7 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  backgroundColor: const Color.fromARGB(255, 205, 233, 255),
+                  backgroundColor: Colors.grey[400],
                 ),
                 child: Text('Rejeitar Correção'),
               ),
@@ -303,9 +303,9 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  backgroundColor: const Color.fromARGB(255, 205, 233, 255),
+                  backgroundColor: Colors.grey[300],
                 ),
-                child: Text('Solicitar Corrção'),
+                child: Text('Solicitar Correção'),
               ),
             const SizedBox(height: 16.0),
             OutlinedButton(
@@ -314,9 +314,9 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
               },
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
-                backgroundColor: const Color.fromARGB(255, 255, 205, 205),
+                backgroundColor: Colors.black,
               ),
-              child: Text('Cancelar', style: TextStyle(color: Colors.black)),
+              child: Text('Cancelar', style: TextStyle(color: Colors.white)),
             ),
           ],
         ),

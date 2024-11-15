@@ -123,7 +123,7 @@ class AdmModel with ChangeNotifier {
         String requestField = solicitationData['requestField'];
         String newValue = solicitationData['newValue'];
 
-        newValue = newValue.replaceAll(RegExp(r'\s?(AM|PM)$'), '');
+        newValue = formatTime(newValue);
 
         await solicitationDoc
             .update({'status': newStatus, 'solicitationsOpen': false});
@@ -175,4 +175,19 @@ class AdmModel with ChangeNotifier {
 
     Navigator.pop(context);
   }
+}
+
+String formatTime(String input) {
+  input = input.replaceAll(RegExp(r'\s?(AM|PM)$', caseSensitive: false), '');
+
+  List<String> parts = input.split(':');
+
+  if (parts.length == 2) {
+    String hours = parts[0].padLeft(2, '0');
+    String minutes = parts[1].padLeft(2, '0');
+
+    return '$hours:$minutes';
+  }
+
+  return input;
 }

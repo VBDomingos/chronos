@@ -41,9 +41,6 @@ class _CompanyPageState extends State<CompanyPage> {
   }
 
   void _onEyeIconPressed(Map<String, dynamic> user) {
-    print('Ícone de olho clicado!');
-    print(user);
-
     final userModel = UserModel.fromMap(user);
 
     Provider.of<UserPointModel>(context, listen: false).userFilter = userModel;

@@ -10,8 +10,6 @@ class MapDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('latitude: $latitude');
-    print('longitude: $longitude');
     return Dialog(
       child: Container(
         width: double.infinity,

@@ -126,8 +126,7 @@ class LoginScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(
-                      height: 40.0),
+                  const SizedBox(height: 40.0),
                   const Text(
                     'CronosPoint',
                     style: TextStyle(
@@ -146,7 +145,6 @@ class LoginScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 24.0),
-
                   TextField(
                     controller: _emailController,
                     decoration: InputDecoration(
@@ -159,7 +157,6 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16.0),
-
                   TextField(
                     controller: _passwordController,
                     obscureText: true,
@@ -173,7 +170,6 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24.0),
-
                   SizedBox(
                     height: 50.0,
                     child: ElevatedButton(
@@ -190,25 +186,6 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16.0),
-
-                  SizedBox(
-                    height: 50.0,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                      ),
-                      onPressed: () async {
-                        await _authenticateWithBiometrics(context);
-                      },
-                      icon: const Icon(Icons.fingerprint),
-                      label: const Text(
-                        'Login com Biometria',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-
                   const Text(
                     'caso não possua conta clique abaixo',
                     style: TextStyle(
@@ -218,7 +195,6 @@ class LoginScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16.0),
-
                   SizedBox(
                     height: 50.0,
                     child: ElevatedButton(
@@ -239,7 +215,6 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16.0),
-
                   const Text(
                     'By clicking continue, you agree to our Terms of Service and Privacy Policy',
                     style: TextStyle(fontSize: 12.0),

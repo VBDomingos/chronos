@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 class AdmModel with ChangeNotifier {
   String? _userId;
   String? _solicitationId;
+  int _workingCount = 0;
+  int _lateCount = 0;
 
   String? get uid => _userId;
   String? get solicitationId => _solicitationId;
+  int? get workingCount => _workingCount;
+  int? get lateCount => _lateCount;
 
   void setData(String? uid, String? solicitationId) {
     _userId = uid;
@@ -37,7 +41,8 @@ class AdmModel with ChangeNotifier {
     }
   }
 
-  Future<int> countWorkingUsers(String companyId) async {
+  Future<void> countWorkingUsers(String companyId) async {
+    print('countWorkingUsers');
     try {
       QuerySnapshot<Map<String, dynamic>> employees = await _firestore
           .collection('employees')
@@ -45,14 +50,14 @@ class AdmModel with ChangeNotifier {
           .where('isWorking', isEqualTo: true)
           .get();
 
-      return employees.docs.length;
+      _workingCount = employees.docs.length;
+      notifyListeners();
     } catch (e) {
       print("Error counting working users: $e");
-      return 0;
     }
   }
 
-  Future<int> countLateUsers(String companyId) async {
+  Future<void> countLateUsers(String companyId) async {
     try {
       QuerySnapshot<Map<String, dynamic>> employees = await _firestore
           .collection('employees')
@@ -60,10 +65,10 @@ class AdmModel with ChangeNotifier {
           .where('isWorking', isEqualTo: false)
           .get();
 
-      return employees.docs.length;
+      _lateCount = employees.docs.length;
+      notifyListeners();
     } catch (e) {
       print("Error counting late users: $e");
-      return 0;
     }
   }
 

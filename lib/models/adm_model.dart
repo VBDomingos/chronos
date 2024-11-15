@@ -1,7 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AdmModel with ChangeNotifier {
+  String? _userId;
+  String? _solicitationId;
+
+  String? get uid => _userId;
+  String? get solicitationId => _solicitationId;
+
+  void setData(String? uid, String? solicitationId) {
+    _userId = uid;
+    _solicitationId = solicitationId;
+  }
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<Map<String, dynamic>> _companyUsers = [];
 
@@ -58,5 +70,105 @@ class AdmModel with ChangeNotifier {
 
   List<String> getUserNames() {
     return _companyUsers.map((user) => user['name'] as String).toList();
+  }
+
+  Future<void> confirmUserSolicitation(BuildContext context, response) async {
+    bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmar Solicitação'),
+          content: Text('Tem certeza de que deseja ${response} a solicitação?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // Usuário cancelou
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // Usuário confirmou
+              },
+              child: Text('Confirmar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    // Se o usuário confirmou, chama a função para registrar o ponto
+    if (confirm == true) {
+      await userSolicitationResponse(context, response);
+    }
+  }
+
+  Future<void> userSolicitationResponse(
+      BuildContext context, String response) async {
+    String newStatus = response == 'aprovar' ? 'accepted' : 'rejected';
+
+    try {
+      DocumentReference solicitationDoc = FirebaseFirestore.instance
+          .collection('employees')
+          .doc(_userId)
+          .collection('solicitations')
+          .doc(_solicitationId);
+
+      DocumentSnapshot solicitationSnapshot = await solicitationDoc.get();
+      if (solicitationSnapshot.exists) {
+        var solicitationData =
+            solicitationSnapshot.data() as Map<String, dynamic>;
+        String requestField = solicitationData['requestField'];
+        String newValue = solicitationData['newValue'];
+
+        await solicitationDoc
+            .update({'status': newStatus, 'solicitationsOpen': false});
+
+        if (response == 'aprovar') {
+          await FirebaseFirestore.instance
+              .collection('employees')
+              .doc(_userId)
+              .collection('timeRecords')
+              .where('date', isEqualTo: solicitationData['requestFieldDate'])
+              .get()
+              .then((querySnapshot) {
+            for (var doc in querySnapshot.docs) {
+              doc.reference.update({
+                '$requestField.time': newValue,
+                '$requestField.solicitationsOpen': false,
+              });
+            }
+          });
+        } else {
+          await FirebaseFirestore.instance
+              .collection('employees')
+              .doc(_userId)
+              .collection('timeRecords')
+              .where('date', isEqualTo: solicitationData['requestFieldDate'])
+              .get()
+              .then((querySnapshot) {
+            for (var doc in querySnapshot.docs) {
+              doc.reference.update({
+                '$requestField.solicitationsOpen': false,
+              });
+            }
+          });
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Solicitação $response com sucesso!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Solicitação não encontrada.')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao processar solicitação: $e')),
+      );
+    }
+
+    Navigator.pop(context);
   }
 }

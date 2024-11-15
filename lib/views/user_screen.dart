@@ -29,7 +29,7 @@ class _UserScreenState extends State<UserScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              DayoftheweekIndicator(), // The day of the week indicator
+              DayoftheweekIndicator(),
 
               const SizedBox(height: 5),
 
@@ -159,7 +159,7 @@ class _UserScreenState extends State<UserScreen> {
                           children: [
                             Text("Mês vigente",
                                 style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text((today) ?? 'N/A'),
+                            Text((today)),
                           ],
                         ),
                       ],

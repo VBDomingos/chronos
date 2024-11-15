@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class AdmModel with ChangeNotifier {
   String? _userId;
@@ -82,13 +81,13 @@ class AdmModel with ChangeNotifier {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(false); // Usuário cancelou
+                Navigator.of(context).pop(false);
               },
               child: Text('Cancelar'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(true); // Usuário confirmou
+                Navigator.of(context).pop(true);
               },
               child: Text('Confirmar'),
             ),
@@ -97,7 +96,6 @@ class AdmModel with ChangeNotifier {
       },
     );
 
-    // Se o usuário confirmou, chama a função para registrar o ponto
     if (confirm == true) {
       await userSolicitationResponse(context, response);
     }

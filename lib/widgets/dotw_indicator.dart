@@ -29,7 +29,7 @@ class DayoftheweekIndicator extends StatelessWidget {
         Center(
           child: Text(
             DateFormat('EEEE | dd/MM/yyyy')
-                .format(today), // Nome completo do dia em português
+                .format(today),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),

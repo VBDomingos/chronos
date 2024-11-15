@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:project/models/adm_model.dart';
 import 'package:project/models/usermodel.dart';
 import 'package:project/views/history.dart';
 import 'package:project/views/user_screen.dart';
-import 'package:project/views/config_screen.dart';
 import 'package:project/views/tela_company.dart';
 import 'package:provider/provider.dart';
 

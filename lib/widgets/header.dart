@@ -53,7 +53,7 @@ class _HeaderState extends State<Header> {
               .setUserData(name, user.uid, companyId, workingPattern, role);
           Provider.of<CompanyWorkingPatternModel>(context, listen: false)
               .setWorkingPattern(companyId!, workingPattern!);
-          setState(() {}); // Refresh UI with updated data
+          setState(() {});
           final today = DateFormat('dd/MM/yyyy').format(DateTime.now());
           final firstMonthDay = DateFormat('dd/MM/yyyy').format(
               DateTime.now().subtract(Duration(days: DateTime.now().day - 1)));

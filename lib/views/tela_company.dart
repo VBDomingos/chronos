@@ -17,7 +17,6 @@ class CompanyPage extends StatefulWidget {
 }
 
 class _CompanyPageState extends State<CompanyPage> {
-  late Future<void> _fetchUsersFuture;
   Map<String, bool> _expanded = {};
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
@@ -29,9 +28,6 @@ class _CompanyPageState extends State<CompanyPage> {
     super.initState();
     final userModel = Provider.of<UserModel>(context, listen: false);
     final admModel = Provider.of<AdmModel>(context, listen: false);
-
-    _fetchUsersFuture =
-        admModel.fetchUsersByCompanyId(userModel.companyId ?? '');
 
     admModel.countWorkingUsers(userModel.companyId ?? '').then((count) {
       setState(() {

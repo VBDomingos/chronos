@@ -20,26 +20,21 @@ class _CompanyPageState extends State<CompanyPage> {
   Map<String, bool> _expanded = {};
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  int _workingCount = 0;
-  int _lateCount = 0;
 
+  @override
   @override
   void initState() {
     super.initState();
-    final userModel = Provider.of<UserModel>(context, listen: false);
+    _initializeData(); // Chama a função assíncrona
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text;
+      });
+    });
+  }
+
+  Future<void> _initializeData() async {
     final admModel = Provider.of<AdmModel>(context, listen: false);
-
-    admModel.countWorkingUsers(userModel.companyId ?? '').then((count) {
-      setState(() {
-        _workingCount = count;
-      });
-    });
-
-    admModel.countLateUsers(userModel.companyId ?? '').then((count) {
-      setState(() {
-        _lateCount = count;
-      });
-    });
 
     _searchController.addListener(() {
       setState(() {
@@ -56,8 +51,7 @@ class _CompanyPageState extends State<CompanyPage> {
       context,
       MaterialPageRoute(
         builder: (context) => HistoryScreen(),
-        settings:
-            const RouteSettings(name: 'HistoryScreen'),
+        settings: const RouteSettings(name: 'HistoryScreen'),
       ),
     );
   }
@@ -81,7 +75,7 @@ class _CompanyPageState extends State<CompanyPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: Header(false),
+      appBar: Header(true),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -93,7 +87,7 @@ class _CompanyPageState extends State<CompanyPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CustomCircularProgress(
-                    workingCount: _workingCount,
+                    workingCount: admModel.workingCount ?? 0,
                     totalEmployees: admModel.companyUsers.length,
                   ),
                   const SizedBox(width: 30.0),
@@ -111,8 +105,10 @@ class _CompanyPageState extends State<CompanyPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildSummaryBox('Trabalhando', Colors.green, '$_workingCount'),
-                  _buildSummaryBox('Em Falta', Colors.red, '$_lateCount'),
+                  _buildSummaryBox(
+                      'Trabalhando', Colors.green, '${admModel.workingCount}'),
+                  _buildSummaryBox(
+                      'Em Falta', Colors.red, '${admModel.lateCount}'),
                 ],
               ),
               const SizedBox(height: 24.0),
@@ -236,24 +232,24 @@ class _CompanyPageState extends State<CompanyPage> {
   }
 
   Widget _buildStatusBox(String label, Color color) {
-  return Container(
-    width: 100,
-    height: 45, 
-    padding: const EdgeInsets.symmetric(horizontal: 3.0, vertical: 5.0),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(12.0),
-      border: Border.all(color: color, width: 2.0),
-    ),
-    child: Center(
-      child: Text(
-        label,
-        style: const TextStyle(fontWeight: FontWeight.bold),
-        textAlign: TextAlign.center,
+    return Container(
+      width: 100,
+      height: 45,
+      padding: const EdgeInsets.symmetric(horizontal: 3.0, vertical: 5.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12.0),
+        border: Border.all(color: color, width: 2.0),
       ),
-    ),
-  );
-}
+      child: Center(
+        child: Text(
+          label,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
 
   Widget _buildSummaryBox(String label, Color color, String value) {
     return Column(

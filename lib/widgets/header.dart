@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:project/models/adm_model.dart';
 import 'package:project/models/companyWorkingPattern.dart';
 import 'package:project/models/userPoint.dart';
 import 'package:project/models/usermodel.dart';
@@ -51,13 +52,19 @@ class _HeaderState extends State<Header> {
 
           Provider.of<UserModel>(context, listen: false)
               .setUserData(name, user.uid, companyId, workingPattern, role);
-          Provider.of<CompanyWorkingPatternModel>(context, listen: false)
+          await Provider.of<CompanyWorkingPatternModel>(context, listen: false)
               .setWorkingPattern(companyId!, workingPattern!);
-          setState(() {});
+          await Provider.of<AdmModel>(context, listen: false)
+              .fetchUsersByCompanyId(companyId ?? '');
+          await Provider.of<AdmModel>(context, listen: false)
+              .countWorkingUsers(companyId ?? '');
+          await Provider.of<AdmModel>(context, listen: false)
+              .countLateUsers(companyId ?? '');
+          setState(() {}); // Refresh UI with updated data
           final today = DateFormat('dd/MM/yyyy').format(DateTime.now());
           final firstMonthDay = DateFormat('dd/MM/yyyy').format(
               DateTime.now().subtract(Duration(days: DateTime.now().day - 1)));
-          Provider.of<UserPointModel>(context, listen: false)
+          await Provider.of<UserPointModel>(context, listen: false)
               .calculateTotalHoursWorked(
                   context, firstMonthDay, today, 'monthWorkedHours');
         }

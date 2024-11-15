@@ -47,9 +47,10 @@ class _HeaderState extends State<Header> {
           final name = userDoc.data()?['name'];
           final companyId = userDoc.data()?['companyId'];
           final workingPattern = userDoc.data()?['workingPattern'];
+          final role = userDoc.data()?['role'];
 
           Provider.of<UserModel>(context, listen: false)
-              .setUserData(name, user.uid, companyId, workingPattern);
+              .setUserData(name, user.uid, companyId, workingPattern, role);
           Provider.of<CompanyWorkingPatternModel>(context, listen: false)
               .setWorkingPattern(companyId!, workingPattern!);
           setState(() {}); // Refresh UI with updated data

@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:project/models/userPoint.dart';
+import 'package:project/models/usermodel.dart';
 import 'package:project/views/correcao_ponto.dart';
 import 'package:project/firebaseoptions.dart';
 import 'package:project/widgets/dateRangePicker.dart';
@@ -47,32 +48,41 @@ class _UserPage extends State<UserPage> {
   @override
   Widget build(BuildContext context) {
     final userPoint = Provider.of<UserPointModel>(context);
+    final userModel = Provider.of<UserModel>(context);
     return Scaffold(
-      backgroundColor: Colors.white, // Define o fundo como branco
+      backgroundColor: Colors.white,
       appBar: Header(false),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Indicador de dia da semana
             DayoftheweekIndicator(),
-
             const SizedBox(height: 10),
-
-            // Busca de Histórico
             const Text(
               'Busca de Histórico',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-
-            // Input de range de data
             DateRangePicker(onDateRangeSelected: _updateDateRange),
-
             const SizedBox(height: 20),
-
-            // Tabela de horas
+            if (userModel.role == 'admin') ...[
+              const Text(
+                'Nome do Usuário',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              TextField(
+                controller: TextEditingController(
+                    text: userPoint.userFilter?.fullName ??
+                        ''), // Substitua "Nome do Usuário" pelo valor desejado
+                readOnly: true,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  suffixIcon: Icon(
+                      Icons.lock), // Ícone para indicar que é somente leitura
+                ),
+              ),
+            ],
             Table(
               columnWidths: const {
                 0: FlexColumnWidth(2),
@@ -84,11 +94,9 @@ class _UserPage extends State<UserPage> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(
-                            10), // Aplica o border radius apenas no topo
+                        top: Radius.circular(10),
                       ),
-                      border:
-                          Border.all(color: Colors.grey), // Adiciona a borda
+                      border: Border.all(color: Colors.grey),
                     ),
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
@@ -130,8 +138,7 @@ class _UserPage extends State<UserPage> {
                     decoration: const BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.vertical(
-                        bottom: Radius.circular(
-                            10), // Aplica o border radius apenas no topo
+                        bottom: Radius.circular(10),
                       ),
                       border: Border(
                         left: BorderSide(color: Colors.grey),
@@ -147,8 +154,6 @@ class _UserPage extends State<UserPage> {
               ],
             ),
             const SizedBox(height: 17),
-
-            // Tabela com dados de horas
             const Text(
               'Tabela de Horas',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -162,8 +167,6 @@ class _UserPage extends State<UserPage> {
           ],
         ),
       ),
-
-      // Rodapé com botões
       bottomNavigationBar: const CustomBottomNavigationBar(),
     );
   }

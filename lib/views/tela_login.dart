@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:project/views/cadastro.dart';
+import 'package:project/views/tela_company.dart';
 import 'package:project/views/user_screen.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -23,13 +25,37 @@ class LoginScreen extends StatelessWidget {
         const SnackBar(content: Text('Login bem-sucedido!')),
       );
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const UserScreen(),
-          settings: const RouteSettings(name: 'UserScreen'),
-        ),
-      );
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        DocumentSnapshot<Map<String, dynamic>> userDoc = await FirebaseFirestore
+            .instance
+            .collection('employees')
+            .doc(user.uid)
+            .get();
+
+        if (userDoc.exists) {
+          final role = userDoc.data()?['role'];
+
+          if (role == 'admin') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const CompanyPage(),
+                settings: const RouteSettings(name: 'TelaCompany'),
+              ),
+            );
+          } else {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const UserScreen(),
+                settings: const RouteSettings(name: 'UserScreen'),
+              ),
+            );
+          }
+        }
+      }
     } on FirebaseAuthException catch (e) {
       String errorMessage;
       switch (e.code) {

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:project/models/userPoint.dart';
+import 'package:project/views/history.dart';
 import '../widgets/circular_progress_painter.dart';
 import '../widgets/dotw_indicator.dart';
 import '../widgets/header.dart';
@@ -27,14 +29,32 @@ class _CompanyPageState extends State<CompanyPage> {
     final admModel = Provider.of<AdmModel>(context, listen: false);
 
     // Fetch users by company ID
-    _fetchUsersFuture = admModel.fetchUsersByCompanyId(userModel.companyId ?? '');
-    
+    _fetchUsersFuture =
+        admModel.fetchUsersByCompanyId(userModel.companyId ?? '');
+
     // Listen to search field changes
     _searchController.addListener(() {
       setState(() {
         _searchQuery = _searchController.text;
       });
     });
+  }
+
+  void _onEyeIconPressed(Map<String, dynamic> user) {
+    print('Ícone de olho clicado!');
+    print(user);
+
+    final userModel = UserModel.fromMap(user);
+
+    Provider.of<UserPointModel>(context, listen: false).userFilter = userModel;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UserPage(),
+        settings:
+            const RouteSettings(name: 'UserPage'), // Define o nome da rota
+      ),
+    );
   }
 
   @override
@@ -49,7 +69,10 @@ class _CompanyPageState extends State<CompanyPage> {
     final userNames = admModel.getUserNames();
     final companyUsers = admModel.companyUsers;
 
-    final filteredUserNames = userNames.where((name) => name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+    final filteredUserNames = userNames
+        .where(
+            (name) => name.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -61,7 +84,6 @@ class _CompanyPageState extends State<CompanyPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               DayoftheweekIndicator(),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -78,9 +100,7 @@ class _CompanyPageState extends State<CompanyPage> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 20.0),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -89,22 +109,20 @@ class _CompanyPageState extends State<CompanyPage> {
                   _buildSummaryBox('Em Pausa', Colors.blue, '02'),
                 ],
               ),
-
               const SizedBox(height: 24.0),
-
               TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.search),
                   hintText: 'Buscar Funcionário',
+                  filled: true,
+                  fillColor: Colors.grey[200],
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
               ),
-
               const SizedBox(height: 24.0),
-
               Column(
                 children: [
                   ...filteredUserNames.map((name) {
@@ -143,18 +161,23 @@ class _CompanyPageState extends State<CompanyPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     name,
                                     style: TextStyle(fontSize: 20),
                                   ),
                                   Text(
-                                    user['isWorking'] == true ? 'Working' : 'Not Working',
+                                    user['isWorking'] == true
+                                        ? 'Working'
+                                        : 'Not Working',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      color: user['isWorking'] == true ? Colors.green : Colors.red,
+                                      color: user['isWorking'] == true
+                                          ? Colors.green
+                                          : Colors.red,
                                     ),
                                   ),
                                 ],
@@ -167,9 +190,27 @@ class _CompanyPageState extends State<CompanyPage> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 8.0),
-                                  child: Text(
-                                    'Role: ${user['role'] ?? 'Unknown'}',
-                                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'Role: ${user['role'] ?? 'Unknown'}',
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey[700]),
+                                      ),
+                                      Spacer(), // Empurra o ícone para a direita
+                                      GestureDetector(
+                                        onTap: () {
+                                          // Chame a função desejada aqui
+                                          _onEyeIconPressed(user);
+                                        },
+                                        child: Icon(
+                                          Icons.remove_red_eye,
+                                          color: Colors.grey[700],
+                                          size: 20,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -198,7 +239,6 @@ class _CompanyPageState extends State<CompanyPage> {
         border: Border.all(color: color, width: 2.0),
       ),
       child: Text(
-        
         label,
         style: const TextStyle(fontWeight: FontWeight.bold),
         textAlign: TextAlign.center,
@@ -218,7 +258,6 @@ class _CompanyPageState extends State<CompanyPage> {
     );
   }
 }
-
 
 class SummaryBox extends StatelessWidget {
   final Color color;

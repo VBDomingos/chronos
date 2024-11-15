@@ -27,7 +27,7 @@ class CorrecaoPontoScreen extends StatefulWidget {
 }
 
 class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
-  String _tipoCorrecao = 'entrada';
+  String _tipoCorrecao = '';
   final TextEditingController _dateController = TextEditingController();
   DateTime? _selectedDate;
   final TextEditingController _timeController = TextEditingController();
@@ -150,13 +150,13 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
                   child: GestureDetector(
                     onTap: () {
                       setState(() {
-                        _tipoCorrecao = 'saida';
+                        _tipoCorrecao = 'saída';
                       });
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
-                        color: _tipoCorrecao == 'saida'
+                        color: _tipoCorrecao == 'saída'
                             ? Colors.red
                             : Colors.white,
                         borderRadius: BorderRadius.circular(8.0),
@@ -168,7 +168,7 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
                         'Saída',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: _tipoCorrecao == 'saida'
+                          color: _tipoCorrecao == 'saída'
                               ? Colors.white
                               : Colors.black,
                           fontSize: 16.0,

@@ -11,6 +11,7 @@ class UserPointModel with ChangeNotifier {
   String? balanceFilterWorkedHours;
   String? balanceFilterExpectedHours;
   String? balanceFilterHours;
+  UserModel? userFilter;
 
   Future<void> addWorkingTime(BuildContext context, String type) async {
     this.loadingPoint = true;
@@ -101,6 +102,13 @@ class UserPointModel with ChangeNotifier {
           'longitude': currentPosition.longitude,
           'solicitationsOpen': false,
         }
+      });
+
+      await FirebaseFirestore.instance
+          .collection('employees')
+          .doc(userModel.uid)
+          .update({
+        'isWorking': type == 'entrada' ? true : false,
       });
 
       print(
@@ -234,7 +242,11 @@ class UserPointModel with ChangeNotifier {
   Future<void> calculateTotalHoursWorked(
       context, String startDate, String endDate, String type) async {
     resetValues();
-    UserModel userModel = Provider.of<UserModel>(context, listen: false);
+
+    UserModel userModel =
+        userFilter ?? Provider.of<UserModel>(context, listen: false);
+    print(userModel.fullName);
+    print(userModel.uid);
     final dateFormatter = DateFormat("dd/MM/yyyy");
 
     DateTime start = dateFormatter.parse(startDate);
@@ -303,6 +315,8 @@ class UserPointModel with ChangeNotifier {
       int balanceMinutes = balance.inMinutes % 60;
       String formattedBalance =
           "${balanceHours.toString().padLeft(2, '0')}:${balanceMinutes.toString().padLeft(2, '0')}";
+
+      print(userModel.fullName);
 
       switch (type) {
         case 'monthWorkedHours':

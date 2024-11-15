@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:project/models/userPoint.dart';
+import 'package:project/models/usermodel.dart';
 import 'package:project/views/correcao_ponto.dart';
+import 'package:project/widgets/mapDialog.dart';
+import 'package:provider/provider.dart';
 
 class HorasWidget extends StatefulWidget {
   final String dataInicial;
@@ -19,6 +23,7 @@ class HorasWidget extends StatefulWidget {
 class _HorasWidgetState extends State<HorasWidget> {
   List<Map<String, dynamic>> timeRecords = [];
   String? userId;
+  var userFilter;
 
   @override
   void initState() {
@@ -36,15 +41,24 @@ class _HorasWidgetState extends State<HorasWidget> {
   }
 
   Future<void> _initializeUserIdAndFetchRecords() async {
-    User? user = FirebaseAuth.instance.currentUser;
+    final userPointModel = Provider.of<UserPointModel>(context, listen: false);
+    final userFilter = userPointModel.userFilter;
 
-    if (user != null) {
-      setState(() {
-        userId = user.uid;
-      });
-      await _fetchTimeRecords();
+    String? userId;
+    if (userFilter != null) {
+      userId = userFilter.uid; // Use o ID do `UserModel`
     } else {
-      print("Usuário não está autenticado.");
+      final User? firebaseUser = FirebaseAuth.instance.currentUser;
+      userId = firebaseUser?.uid; // Use o ID do FirebaseAuth.User
+    }
+
+    if (userId != null) {
+      setState(() {
+        this.userId = userId; // Atualize o ID do usuário
+      });
+      await _fetchTimeRecords(); // Continue com a lógica de busca
+    } else {
+      print("Nenhum usuário definido ou autenticado.");
     }
   }
 
@@ -68,29 +82,42 @@ class _HorasWidgetState extends State<HorasWidget> {
           timeRecords = snapshot.docs.map((doc) {
             Map<String, dynamic> record = {
               'id': doc.id,
-              'date': doc['date'],
+              'date': doc['date'] ?? '',
               'entries': <Map<String, dynamic>>[],
             };
 
             doc.data().forEach((key, value) {
               if (key.startsWith('entrada-') && value is Map<String, dynamic>) {
-                String entryNumber = key.split('-')[1];
                 String entryTime = value['time']?.toString() ?? '---';
                 bool entrySolicitationsOpen =
                     value['solicitationsOpen'] ?? false;
-                String? exitTime =
-                    doc.data()['saida-$entryNumber']?['time']?.toString();
-                bool exitSolicitationsOpen = doc.data()['saida-$entryNumber']
-                        ?['solicitationsOpen'] ??
-                    false;
+                double latitudeEntrada = (value['latitude'] ?? 0.0).toDouble();
+                double longitudeEntrada =
+                    (value['longitude'] ?? 0.0).toDouble();
 
                 record['entries'].add({
-                  'entrada': entryTime,
-                  'entrada_key': key,
-                  'entrada_solicitationsOpen': entrySolicitationsOpen,
-                  if (exitTime != null && exitTime != '---') 'saida': exitTime,
-                  if (exitTime != null && exitTime != '---')
-                    'saida_solicitationsOpen': exitSolicitationsOpen,
+                  'tipo': 'Entrada',
+                  'time': entryTime,
+                  'solicitationsOpen': entrySolicitationsOpen,
+                  'latitude': latitudeEntrada,
+                  'longitude': longitudeEntrada,
+                  'originalKey': key,
+                });
+              } else if (key.startsWith('saida-') &&
+                  value is Map<String, dynamic>) {
+                String exitTime = value['time']?.toString() ?? '---';
+                bool exitSolicitationsOpen =
+                    value['solicitationsOpen'] ?? false;
+                double latitudeSaida = (value['latitude'] ?? 0.0).toDouble();
+                double longitudeSaida = (value['longitude'] ?? 0.0).toDouble();
+
+                record['entries'].add({
+                  'tipo': 'Saída',
+                  'time': exitTime,
+                  'solicitationsOpen': exitSolicitationsOpen,
+                  'latitude': latitudeSaida,
+                  'longitude': longitudeSaida,
+                  'originalKey': key,
                 });
               }
             });
@@ -112,6 +139,7 @@ class _HorasWidgetState extends State<HorasWidget> {
       required String date,
       required String hora,
       required String originalKey}) {
+    print(tipo);
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -157,20 +185,14 @@ class _HorasWidgetState extends State<HorasWidget> {
           return Column(
             children: [
               _buildHoraRow(
-                entry['entrada']!,
-                "Entrada",
+                entry['time'] ?? '---',
+                entry['tipo'] ?? 'Unknown',
                 date,
-                entry['entrada_key']!,
-                entry['entrada_solicitationsOpen'] ?? false,
+                entry['solicitationsOpen'] ?? false,
+                entry['latitude'] ?? 0.0,
+                entry['longitude'] ?? 0.0,
+                entry['originalKey'],
               ),
-              if (entry.containsKey('saida'))
-                _buildHoraRow(
-                  entry['saida']!,
-                  "Saída",
-                  date,
-                  entry['entrada_key']!,
-                  entry['saida_solicitationsOpen'] ?? false,
-                ),
             ],
           );
         }).toList(),
@@ -178,8 +200,17 @@ class _HorasWidgetState extends State<HorasWidget> {
     );
   }
 
-  Widget _buildHoraRow(String hora, String tipo, String date,
-      String originalKey, bool solicitationsOpen) {
+  Widget _buildHoraRow(
+    String hora,
+    String tipo,
+    String date,
+    bool solicitationsOpen,
+    double latitude,
+    double longitude,
+    String originalKey,
+  ) {
+    final userModel = Provider.of<UserModel>(context);
+
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -194,18 +225,51 @@ class _HorasWidgetState extends State<HorasWidget> {
               : (tipo == "Entrada" ? Colors.green : Colors.red),
         ),
         title: Text("$hora - $tipo"),
-        trailing: !solicitationsOpen
-            ? IconButton(
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (!solicitationsOpen && userModel.role != 'admin')
+              IconButton(
                 icon: Icon(Icons.edit),
                 onPressed: () {
-                  _navigateToCorrecaoPontoScreen(context,
-                      tipo: tipo,
-                      date: date,
-                      hora: hora,
-                      originalKey: originalKey);
+                  _navigateToCorrecaoPontoScreen(
+                    context,
+                    tipo: tipo,
+                    date: date,
+                    hora: hora,
+                    originalKey: originalKey,
+                  );
                 },
-              )
-            : null,
+              ),
+            if (!solicitationsOpen && userModel.role == 'admin')
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () {
+                    if (latitude == 0.0 && longitude == 0.0) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Localização não disponível.')),
+                      );
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return MapDialog(
+                            latitude: latitude,
+                            longitude: longitude,
+                          );
+                        },
+                      );
+                    }
+                  },
+                  child: Icon(
+                    Icons.map,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

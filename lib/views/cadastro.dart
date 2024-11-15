@@ -26,14 +26,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _registerUser(BuildContext context) async {
     try {
-      // Registro com email e senha
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
-      // Armazenar informações adicionais no Firestore
       await _firestore
           .collection('employees')
           .doc(userCredential.user!.uid)
@@ -48,7 +46,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'workingPattern': selectedWorkingPattern,
       });
 
-      // Mensagem de sucesso e redirecionamento
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Conta criada com sucesso!'),
@@ -88,20 +85,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
           backgroundColor: Colors.red,
         ),
       );
-      print(e); // Log do erro para debug
+      print(e);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset:
-          true, // Permite que o conteúdo suba com o teclado
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            // Voltar para a tela de login
             Navigator.pop(context);
           },
         ),
@@ -114,7 +109,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Título principal
                 const Text(
                   'CronosPoint',
                   style: TextStyle(
@@ -124,8 +118,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20.0),
-
-                // Subtítulo
                 const Text(
                   'Crie sua conta',
                   style: TextStyle(
@@ -135,7 +127,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8.0),
-
                 const Text(
                   'Registre seus dados',
                   style: TextStyle(
@@ -144,8 +135,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24.0),
-
-                // Campo de email
                 TextField(
                   controller: _emailController,
                   decoration: InputDecoration(
@@ -158,8 +147,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 16.0),
-
-                // Campo de senha
                 TextField(
                   controller: _passwordController,
                   obscureText: true,
@@ -173,8 +160,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 16.0),
-
-                // Campo Nome completo
                 TextField(
                   controller: fullNameController,
                   decoration: InputDecoration(
@@ -187,12 +172,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 24.0),
-
-                // Campo CPF
                 TextField(
                   controller: cpfController,
-                  keyboardType:
-                      TextInputType.number, // Apenas números no teclado
+                  keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     labelText: 'CPF',
                     border: OutlineInputBorder(
@@ -203,11 +185,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 24.0),
-
-                // Campo Telefone
                 TextField(
                   controller: phoneController,
-                  keyboardType: TextInputType.phone, // Teclado numérico
+                  keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
                     labelText: 'Telefone',
                     border: OutlineInputBorder(
@@ -218,8 +198,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 24.0),
-
-                // Campo Código da empresa
                 TextField(
                   controller: companyCodeController,
                   decoration: InputDecoration(
@@ -232,8 +210,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 24.0),
-
-                // Dropdown para o padrão de trabalho
                 DropdownButtonFormField<String>(
                   value: selectedWorkingPattern,
                   onChanged: (String? newValue) {
@@ -261,13 +237,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 24.0),
-
-                // Botão de criar conta
                 SizedBox(
                   height: 50.0,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black, // Cor preta
+                      backgroundColor: Colors.black,
                     ),
                     onPressed: () async => await _registerUser(context),
                     child: const Text(
@@ -277,8 +251,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 16.0),
-
-                // Termos de serviço e política de privacidade
                 const Text(
                   'By clicking continue, you agree to our Terms of Service and Privacy Policy',
                   style: TextStyle(fontSize: 12.0),

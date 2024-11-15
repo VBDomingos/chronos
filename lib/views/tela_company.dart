@@ -25,7 +25,7 @@ class _CompanyPageState extends State<CompanyPage> {
   @override
   void initState() {
     super.initState();
-    _initializeData(); // Chama a função assíncrona
+    _initializeData();
     _searchController.addListener(() {
       setState(() {
         _searchQuery = _searchController.text;

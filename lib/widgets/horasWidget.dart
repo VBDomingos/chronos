@@ -47,17 +47,17 @@ class _HorasWidgetState extends State<HorasWidget> {
 
     String? userId;
     if (userFilter != null) {
-      userId = userFilter.uid; // Use o ID do `UserModel`
+      userId = userFilter.uid;
     } else {
       final User? firebaseUser = FirebaseAuth.instance.currentUser;
-      userId = firebaseUser?.uid; // Use o ID do FirebaseAuth.User
+      userId = firebaseUser?.uid;
     }
 
     if (userId != null) {
       setState(() {
-        this.userId = userId; // Atualize o ID do usuário
+        this.userId = userId;
       });
-      await _fetchTimeRecords(); // Continue com a lógica de busca
+      await _fetchTimeRecords();
     } else {
       print("Nenhum usuário definido ou autenticado.");
     }
@@ -142,7 +142,6 @@ class _HorasWidgetState extends State<HorasWidget> {
       required String originalKey,
       required String reason,
       required String newValue}) {
-    print(tipo);
     Navigator.push(
       context,
       MaterialPageRoute(

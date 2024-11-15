@@ -18,31 +18,26 @@ class UserPointModel with ChangeNotifier {
     notifyListeners();
     UserModel userModel = Provider.of<UserModel>(context, listen: false);
 
-    // Formata a data para o formato desejado
     final now = DateTime.now();
-    final dateKey = DateFormat('dd/MM/yyyy').format(now); // Ex: "26/10/2024"
-    final timeKey = DateFormat('HH:mm')
-        .format(now.subtract(const Duration(hours: 3))); // Ex: "07:12"
+    final dateKey = DateFormat('dd/MM/yyyy').format(now);
+    final timeKey =
+        DateFormat('HH:mm').format(now.subtract(const Duration(hours: 3)));
 
     try {
-      // Solicita a permissão de localização, se necessário
       LocationPermission permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
         throw Exception("Permissão de localização negada.");
       }
 
-      // Obtenha a localização atual
       Position currentPosition = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
 
-      // Referência para a coleção de registros de tempo do usuário
       final timeRecordsRef = FirebaseFirestore.instance
           .collection('employees')
           .doc(userModel.uid)
           .collection('timeRecords');
 
-      // Consulta para encontrar o documento de hoje
       final snapshot =
           await timeRecordsRef.where('date', isEqualTo: dateKey).get();
 
@@ -56,10 +51,8 @@ class UserPointModel with ChangeNotifier {
         docRef = snapshot.docs.first.reference;
       }
 
-      // Recupera o documento atual
       final docSnapshot = await docRef.get();
 
-      // Verifica o último tipo de ponto registrado
       if (docSnapshot.exists) {
         final data = docSnapshot.data();
         if (data != null) {
@@ -69,7 +62,6 @@ class UserPointModel with ChangeNotifier {
               .toList();
 
           if (filteredKeys.isNotEmpty) {
-            // Ordena as chaves com base no campo de horário dentro de cada registro
             filteredKeys.sort((a, b) {
               final timeA = data[a]['time'] as String;
               final timeB = data[b]['time'] as String;
@@ -94,7 +86,6 @@ class UserPointModel with ChangeNotifier {
         }
       }
 
-      // Atualiza o documento no Firestore com o horário e localização da marcação
       await docRef.update({
         '$type-$count': {
           'time': timeKey,
@@ -111,8 +102,6 @@ class UserPointModel with ChangeNotifier {
         'isWorking': type == 'entrada' ? true : false,
       });
 
-      print(
-          '$type-$count adicionado com sucesso na data $dateKey com localização!');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Ponto registrado com sucesso!')),
       );
@@ -130,7 +119,6 @@ class UserPointModel with ChangeNotifier {
 
   Future<void> confirmAndAddWorkingTime(
       BuildContext context, String type) async {
-    // Mostra o diálogo de confirmação
     bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -140,13 +128,13 @@ class UserPointModel with ChangeNotifier {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(false); // Usuário cancelou
+                Navigator.of(context).pop(false);
               },
               child: Text('Cancelar'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(true); // Usuário confirmou
+                Navigator.of(context).pop(true);
               },
               child: Text('Confirmar'),
             ),
@@ -155,7 +143,6 @@ class UserPointModel with ChangeNotifier {
       },
     );
 
-    // Se o usuário confirmou, chama a função para registrar o ponto
     if (confirm == true) {
       await addWorkingTime(context, type);
     }
@@ -172,13 +159,13 @@ class UserPointModel with ChangeNotifier {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(false); // Usuário cancelou
+                Navigator.of(context).pop(false);
               },
               child: Text('Cancelar'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(true); // Usuário confirmou
+                Navigator.of(context).pop(true);
               },
               child: Text('Confirmar'),
             ),
@@ -187,7 +174,6 @@ class UserPointModel with ChangeNotifier {
       },
     );
 
-    // Se o usuário confirmou, chama a função para registrar o ponto
     if (confirm == true) {
       await requestChangeWorkingTime(
           context, reasonController, timeController, date, hora, originalKey);
@@ -245,8 +231,6 @@ class UserPointModel with ChangeNotifier {
 
     UserModel userModel =
         userFilter ?? Provider.of<UserModel>(context, listen: false);
-    print(userModel.fullName);
-    print(userModel.uid);
     final dateFormatter = DateFormat("dd/MM/yyyy");
 
     DateTime start = dateFormatter.parse(startDate);
@@ -254,7 +238,6 @@ class UserPointModel with ChangeNotifier {
 
     Duration totalWorkedDuration = Duration.zero;
 
-    // Calculate total worked hours from timeRecords
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
           .instance
@@ -315,8 +298,6 @@ class UserPointModel with ChangeNotifier {
       int balanceMinutes = balance.inMinutes % 60;
       String formattedBalance =
           "${balanceHours.toString().padLeft(2, '0')}:${balanceMinutes.toString().padLeft(2, '0')}";
-
-      print(userModel.fullName);
 
       switch (type) {
         case 'monthWorkedHours':

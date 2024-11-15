@@ -60,7 +60,7 @@ class _HeaderState extends State<Header> {
               .countWorkingUsers(companyId ?? '');
           await Provider.of<AdmModel>(context, listen: false)
               .countLateUsers(companyId ?? '');
-          setState(() {}); // Refresh UI with updated data
+          setState(() {});
           final today = DateFormat('dd/MM/yyyy').format(DateTime.now());
           final firstMonthDay = DateFormat('dd/MM/yyyy').format(
               DateTime.now().subtract(Duration(days: DateTime.now().day - 1)));

@@ -28,31 +28,22 @@ class ConfigPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            // Notifications toggle
             SettingToggle(
               title: 'Notificações',
               initialValue: true,
-              onChanged: (value) {
-                // Handle change
-              },
+              onChanged: (value) {},
             ),
             const SizedBox(height: 20),
-            // Dark Mode toggle
             SettingToggle(
               title: 'Modo Escuro',
               initialValue: false,
-              onChanged: (value) {
-                // Handle change
-              },
+              onChanged: (value) {},
             ),
             const SizedBox(height: 20),
-            // Auto-login toggle
             SettingToggle(
               title: 'Login Automático',
               initialValue: true,
-              onChanged: (value) {
-                // Handle change
-              },
+              onChanged: (value) {},
             ),
           ],
         ),

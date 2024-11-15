@@ -42,7 +42,6 @@ class AdmModel with ChangeNotifier {
   }
 
   Future<void> countWorkingUsers(String companyId) async {
-    print('countWorkingUsers');
     try {
       QuerySnapshot<Map<String, dynamic>> employees = await _firestore
           .collection('employees')

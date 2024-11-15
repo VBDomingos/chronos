@@ -1,31 +1,49 @@
 import 'package:flutter/material.dart';
 
 class CustomCircularProgress extends StatelessWidget {
-  const CustomCircularProgress({super.key});
+  final int workingCount;
+  final int totalEmployees;
+
+  const CustomCircularProgress({
+    super.key,
+    required this.workingCount,
+    required this.totalEmployees,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final notWorkingCount = totalEmployees - workingCount;
+
     return SizedBox(
       width: 150,
       height: 150,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Draw the custom circular progress
           CustomPaint(
             size: const Size(150, 150),
-            painter: CircularProgressPainter(),
+            painter: CircularProgressPainter(
+              workingCount: workingCount,
+              notWorkingCount: notWorkingCount,
+              totalEmployees: totalEmployees,
+            ),
           ),
-          // Text inside the circle
-          const Positioned(
+          Positioned(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '10',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  '$workingCount',
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
-                Text('De 40 Func.', style: TextStyle(fontSize: 18)),
+                Text(
+                  'De $totalEmployees Func.',
+                  style: const TextStyle(fontSize: 18),
+                ),
               ],
             ),
           ),
@@ -36,13 +54,20 @@ class CustomCircularProgress extends StatelessWidget {
 }
 
 class CircularProgressPainter extends CustomPainter {
+  final int workingCount;
+  final int notWorkingCount;
+  final int totalEmployees;
+
+  CircularProgressPainter({
+    required this.workingCount,
+    required this.notWorkingCount,
+    required this.totalEmployees,
+  });
+
   @override
   void paint(Canvas canvas, Size size) {
-    Paint redPaint = Paint()
-      ..color = Colors.red
-      ..strokeWidth = 10
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
+    final workingFraction = workingCount / totalEmployees;
+    final notWorkingFraction = notWorkingCount / totalEmployees;
 
     Paint greenPaint = Paint()
       ..color = Colors.green
@@ -50,54 +75,33 @@ class CircularProgressPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
-    Paint bluePaint = Paint()
-      ..color = Colors.blue
+    Paint redPaint = Paint()
+      ..color = Colors.red
       ..strokeWidth = 10
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
-    Paint yellowPaint = Paint()
-      ..color = Colors.yellow
-      ..strokeWidth = 10
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
+    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
 
     canvas.drawArc(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      -3.14 / 2, // Starting point (top of the circle)
-      3.14 * 2, // 75% of the circle
-      false,
-      bluePaint,
-    );
-
-    canvas.drawArc(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      -3.14 / 2, // Starting point (top of the circle)
-      3.14 * 1.5, // 75% of the circle
-      false,
-      redPaint,
-    );
-
-    canvas.drawArc(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      -3.14 / 2, // Starting point (top of the circle)
-      3.14 * 1.0, // 75% of the circle
-      false,
-      yellowPaint,
-    );
-
-    // Draw the green (25%) arc
-    canvas.drawArc(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      -3.14 / 2, // Starting point (top of the circle)
-      3.14 * 0.5, // 25% of the circle
+      rect,
+      -3.14 / 2,
+      3.14 * 2 * workingFraction,
       false,
       greenPaint,
+    );
+
+    canvas.drawArc(
+      rect,
+      -3.14 / 2 + 3.14 * 2 * workingFraction,
+      3.14 * 2 * notWorkingFraction,
+      false,
+      redPaint,
     );
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
+    return true;
   }
 }

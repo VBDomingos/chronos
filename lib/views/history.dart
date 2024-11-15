@@ -1,24 +1,19 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:project/models/userPoint.dart';
 import 'package:project/models/usermodel.dart';
-import 'package:project/views/correcao_ponto.dart';
-import 'package:project/firebaseoptions.dart';
 import 'package:project/widgets/dateRangePicker.dart';
 import 'package:project/widgets/horasWidget.dart';
-import 'package:project/views/tela_login.dart';
-import 'package:project/views/user_screen.dart';
 import 'package:project/widgets/bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import '../widgets/dotw_indicator.dart';
 import '../widgets/header.dart';
 
-class UserPage extends StatefulWidget {
+class HistoryScreen extends StatefulWidget {
   @override
-  _UserPage createState() => _UserPage();
+  _HistoryScreen createState() => _HistoryScreen();
 }
 
-class _UserPage extends State<UserPage> {
+class _HistoryScreen extends State<HistoryScreen> {
   Map<String, String> selectedDateRange = {
     'dataInicial': '',
     'dataFinal': '',
@@ -28,7 +23,6 @@ class _UserPage extends State<UserPage> {
     setState(() {
       selectedDateRange = transformarData(dateRange);
     });
-    // Obtenha o UserPointModel do Provider e chame a função desejada
     final userPoint = Provider.of<UserPointModel>(context, listen: false);
     userPoint.calculateTotalHoursWorked(
         context,
@@ -74,12 +68,12 @@ class _UserPage extends State<UserPage> {
               TextField(
                 controller: TextEditingController(
                     text: userPoint.userFilter?.fullName ??
-                        ''), // Substitua "Nome do Usuário" pelo valor desejado
+                        ''),
                 readOnly: true,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   suffixIcon: Icon(
-                      Icons.lock), // Ícone para indicar que é somente leitura
+                      Icons.lock),
                 ),
               ),
             ],

@@ -42,7 +42,7 @@ class LoginScreen extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) => const CompanyPage(),
-                settings: const RouteSettings(name: 'TelaCompany'),
+                settings: const RouteSettings(name: 'CompanyPage'),
               ),
             );
           } else {
@@ -99,7 +99,6 @@ class LoginScreen extends StatelessWidget {
     }
 
     if (isAuthenticated) {
-      // Navigate to UserScreen on successful biometric authentication
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -119,7 +118,6 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        // Adiciona SafeArea aqui
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -129,7 +127,7 @@ class LoginScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(
-                      height: 40.0), // Adiciona um espaçamento no topo
+                      height: 40.0),
                   const Text(
                     'CronosPoint',
                     style: TextStyle(
@@ -193,7 +191,6 @@ class LoginScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16.0),
 
-                  // Botão para login biométrico
                   SizedBox(
                     height: 50.0,
                     child: ElevatedButton.icon(

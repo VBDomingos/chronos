@@ -17,8 +17,8 @@ class ChronosPointApp extends StatelessWidget {
         primaryColor: Colors.white,
         scaffoldBackgroundColor: Colors.white,
         colorScheme: ColorScheme.fromSwatch().copyWith(
-          primary: Colors.blueAccent, // Cor primária do tema
-          secondary: Colors.greenAccent, // Cor secundária para contrastes
+          primary: Colors.black,
+          secondary: Colors.grey[300],
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(

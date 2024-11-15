@@ -51,13 +51,10 @@ class CompanyWorkingPatternModel with ChangeNotifier {
   }
 
   String incrementHour(String timeString) {
-    // Converte a string de hora para DateTime
     DateTime time = DateFormat('HH:mm').parse(timeString);
 
-    // Adiciona uma hora
     DateTime incrementedTime = time.add(const Duration(hours: 1));
 
-    // Converte de volta para string no formato HH:mm
     return DateFormat('HH:mm').format(incrementedTime);
   }
 

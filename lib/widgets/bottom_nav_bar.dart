@@ -28,19 +28,18 @@ class CustomBottomNavigationBar extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => CompanyPage(),
                       settings: const RouteSettings(
-                          name: 'AdmScreen'), // Define o nome da rota
+                          name: 'CompanyPage'),
                     ),
                   );
                 }
               } else {
-                // Verifica se a rota atual já é a UserPage
                 if (ModalRoute.of(context)?.settings.name != 'UserScreen') {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => UserScreen(),
                       settings: const RouteSettings(
-                          name: 'UserScreen'), // Define o nome da rota
+                          name: 'UserScreen'),
                     ),
                   );
                 }
@@ -51,16 +50,28 @@ class CustomBottomNavigationBar extends StatelessWidget {
           ),
           ElevatedButton.icon(
             onPressed: () {
-              // Verifica se a rota atual já é a UserPage
-              if (ModalRoute.of(context)?.settings.name != 'UserPage') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UserPage(),
-                    settings: const RouteSettings(
-                        name: 'UserPage'), // Define o nome da rota
-                  ),
-                );
+              if (userModel.role == 'admin') {
+                if (ModalRoute.of(context)?.settings.name != 'UserScreen') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserScreen(),
+                      settings: const RouteSettings(
+                          name: 'UserScreen'),
+                    ),
+                  );
+                }
+              } else {
+                if (ModalRoute.of(context)?.settings.name != 'HistoryScreen') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HistoryScreen(),
+                      settings: const RouteSettings(
+                          name: 'HistoryScreen'),
+                    ),
+                  );
+                }
               }
             },
             icon: const Icon(Icons.person),

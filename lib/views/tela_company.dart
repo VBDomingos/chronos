@@ -21,6 +21,8 @@ class _CompanyPageState extends State<CompanyPage> {
   Map<String, bool> _expanded = {};
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  int _workingCount = 0;
+  int _lateCount = 0;
 
   @override
   void initState() {
@@ -28,11 +30,21 @@ class _CompanyPageState extends State<CompanyPage> {
     final userModel = Provider.of<UserModel>(context, listen: false);
     final admModel = Provider.of<AdmModel>(context, listen: false);
 
-    // Fetch users by company ID
     _fetchUsersFuture =
         admModel.fetchUsersByCompanyId(userModel.companyId ?? '');
 
-    // Listen to search field changes
+    admModel.countWorkingUsers(userModel.companyId ?? '').then((count) {
+      setState(() {
+        _workingCount = count;
+      });
+    });
+
+    admModel.countLateUsers(userModel.companyId ?? '').then((count) {
+      setState(() {
+        _lateCount = count;
+      });
+    });
+
     _searchController.addListener(() {
       setState(() {
         _searchQuery = _searchController.text;
@@ -50,9 +62,9 @@ class _CompanyPageState extends State<CompanyPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => UserPage(),
+        builder: (context) => HistoryScreen(),
         settings:
-            const RouteSettings(name: 'UserPage'), // Define o nome da rota
+            const RouteSettings(name: 'HistoryScreen'),
       ),
     );
   }
@@ -87,15 +99,17 @@ class _CompanyPageState extends State<CompanyPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CustomCircularProgress(),
+                  CustomCircularProgress(
+                    workingCount: _workingCount,
+                    totalEmployees: admModel.companyUsers.length,
+                  ),
                   const SizedBox(width: 30.0),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       _buildStatusBox('Trabalhando', Colors.green),
-                      _buildStatusBox('A Iniciar', Colors.yellow),
+                      SizedBox(height: 9),
                       _buildStatusBox('Em Falta', Colors.red),
-                      _buildStatusBox('Ausente', Colors.blue),
                     ],
                   ),
                 ],
@@ -104,9 +118,8 @@ class _CompanyPageState extends State<CompanyPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildSummaryBox('Completou Jorn.', Colors.green, '03'),
-                  _buildSummaryBox('Atrasado', Colors.red, '01'),
-                  _buildSummaryBox('Em Pausa', Colors.blue, '02'),
+                  _buildSummaryBox('Trabalhando', Colors.green, '$_workingCount'),
+                  _buildSummaryBox('Em Falta', Colors.red, '$_lateCount'),
                 ],
               ),
               const SizedBox(height: 24.0),
@@ -170,8 +183,8 @@ class _CompanyPageState extends State<CompanyPage> {
                                   ),
                                   Text(
                                     user['isWorking'] == true
-                                        ? 'Working'
-                                        : 'Not Working',
+                                        ? 'Trabalhando'
+                                        : 'Em Falta',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -193,15 +206,14 @@ class _CompanyPageState extends State<CompanyPage> {
                                   child: Row(
                                     children: [
                                       Text(
-                                        'Role: ${user['role'] ?? 'Unknown'}',
+                                        'Email: ${user['email'] ?? 'Unknown'}',
                                         style: TextStyle(
                                             fontSize: 14,
                                             color: Colors.grey[700]),
                                       ),
-                                      Spacer(), // Empurra o ícone para a direita
+                                      Spacer(),
                                       GestureDetector(
                                         onTap: () {
-                                          // Chame a função desejada aqui
                                           _onEyeIconPressed(user);
                                         },
                                         child: Icon(
@@ -231,20 +243,24 @@ class _CompanyPageState extends State<CompanyPage> {
   }
 
   Widget _buildStatusBox(String label, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 8.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.0),
-        border: Border.all(color: color, width: 2.0),
-      ),
+  return Container(
+    width: 100,
+    height: 45, 
+    padding: const EdgeInsets.symmetric(horizontal: 3.0, vertical: 5.0),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12.0),
+      border: Border.all(color: color, width: 2.0),
+    ),
+    child: Center(
       child: Text(
         label,
         style: const TextStyle(fontWeight: FontWeight.bold),
         textAlign: TextAlign.center,
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildSummaryBox(String label, Color color, String value) {
     return Column(

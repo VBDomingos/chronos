@@ -123,6 +123,8 @@ class AdmModel with ChangeNotifier {
         String requestField = solicitationData['requestField'];
         String newValue = solicitationData['newValue'];
 
+        newValue = newValue.replaceAll(RegExp(r'\s?(AM|PM)$'), '');
+
         await solicitationDoc
             .update({'status': newStatus, 'solicitationsOpen': false});
 

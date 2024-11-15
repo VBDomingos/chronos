@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:project/models/adm_model.dart';
 import 'package:project/models/userPoint.dart';
 import 'package:project/models/usermodel.dart';
 import 'package:project/views/correcao_ponto.dart';
@@ -112,7 +113,7 @@ class _HorasWidgetState extends State<HorasWidget> {
                 double longitudeSaida = (value['longitude'] ?? 0.0).toDouble();
 
                 record['entries'].add({
-                  'tipo': 'Saída',
+                  'tipo': 'Saida',
                   'time': exitTime,
                   'solicitationsOpen': exitSolicitationsOpen,
                   'latitude': latitudeSaida,
@@ -138,7 +139,9 @@ class _HorasWidgetState extends State<HorasWidget> {
       {required String tipo,
       required String date,
       required String hora,
-      required String originalKey}) {
+      required String originalKey,
+      required String reason,
+      required String newValue}) {
     print(tipo);
     Navigator.push(
       context,
@@ -148,9 +151,45 @@ class _HorasWidgetState extends State<HorasWidget> {
           date: date,
           hora: hora,
           originalKey: originalKey,
+          reason: reason,
+          newValue: newValue,
         ),
       ),
     );
+  }
+
+  void _viewSolicitation(BuildContext context, String originalKey, String date,
+      String type) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+          .instance
+          .collection('employees')
+          .doc(userId)
+          .collection('solicitations')
+          .where('requestField', isEqualTo: originalKey)
+          .where('requestFieldDate', isEqualTo: date)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        final admModel = Provider.of<AdmModel>(context, listen: false);
+
+        admModel.setData(userId, snapshot.docs.first.id);
+
+        _navigateToCorrecaoPontoScreen(
+          context,
+          tipo: type,
+          date: snapshot.docs.first['requestFieldDate'],
+          hora: snapshot.docs.first['previousValue'],
+          originalKey: snapshot.docs.first['requestField'],
+          reason: snapshot.docs.first['reason'],
+          newValue: snapshot.docs.first['newValue'],
+        );
+      } else {
+        print("Nenhuma solicitação encontrada para o campo $originalKey.");
+      }
+    } catch (e) {
+      print("Erro ao buscar solicitação: $e");
+    }
   }
 
   @override
@@ -209,7 +248,7 @@ class _HorasWidgetState extends State<HorasWidget> {
     double longitude,
     String originalKey,
   ) {
-    final userModel = Provider.of<UserModel>(context);
+    final userModel = Provider.of<UserModel>(context, listen: false);
 
     return Container(
       decoration: BoxDecoration(
@@ -228,6 +267,13 @@ class _HorasWidgetState extends State<HorasWidget> {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (solicitationsOpen && userModel.role == 'admin')
+              IconButton(
+                icon: Icon(Icons.info),
+                onPressed: () {
+                  _viewSolicitation(context, originalKey, date, tipo);
+                },
+              ),
             if (!solicitationsOpen && userModel.role != 'admin')
               IconButton(
                 icon: Icon(Icons.edit),
@@ -238,6 +284,8 @@ class _HorasWidgetState extends State<HorasWidget> {
                     date: date,
                     hora: hora,
                     originalKey: originalKey,
+                    reason: '',
+                    newValue: '',
                   );
                 },
               ),

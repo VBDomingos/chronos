@@ -17,7 +17,7 @@ class AdmScreen extends StatefulWidget {
 class _AdmScreenState extends State<AdmScreen> {
   @override
   Widget build(BuildContext context) {
-    final userModel = Provider.of<UserModel>(context);
+    final userModel = Provider.of<UserModel>(context, listen: false);
     final admModel = Provider.of<AdmModel>(context);
     final userNames = admModel.getUserNames();
     return Scaffold(

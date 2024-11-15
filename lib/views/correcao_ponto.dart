@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:project/models/adm_model.dart';
 import 'package:project/models/userPoint.dart';
+import 'package:project/models/usermodel.dart';
 import 'package:provider/provider.dart';
-import 'package:project/views/history.dart';
-import 'package:project/views/tela_company.dart';
 import 'package:project/widgets/bottom_nav_bar.dart';
 import 'package:project/widgets/header.dart';
 
@@ -13,14 +12,18 @@ class CorrecaoPontoScreen extends StatefulWidget {
   final String date;
   final String hora;
   final String originalKey;
+  final String reason;
+  final String newValue;
 
-  const CorrecaoPontoScreen({
-    Key? key,
-    required this.tipo,
-    required this.date,
-    required this.hora,
-    required this.originalKey,
-  }) : super(key: key);
+  const CorrecaoPontoScreen(
+      {Key? key,
+      required this.tipo,
+      required this.date,
+      required this.hora,
+      required this.originalKey,
+      required this.reason,
+      required this.newValue})
+      : super(key: key);
 
   @override
   _CorrecaoPontoScreenState createState() => _CorrecaoPontoScreenState();
@@ -33,6 +36,7 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
   final TextEditingController _timeController = TextEditingController();
   TimeOfDay? _selectedTime;
   final TextEditingController _reasonController = TextEditingController();
+  final TextEditingController _newTimeController = TextEditingController();
 
   @override
   void initState() {
@@ -40,10 +44,11 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
     _tipoCorrecao = widget.tipo.toLowerCase();
     _dateController.text = widget.date;
     _timeController.text = widget.hora;
+    _reasonController.text = widget.reason;
+    _newTimeController.text = widget.newValue;
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    // Converte o texto do controlador em um objeto DateTime ou usa DateTime.now() como padrão.
     DateTime initialDate;
     if (_dateController.text.isNotEmpty) {
       try {
@@ -71,7 +76,6 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
   }
 
   Future<void> _selectTime(BuildContext context) async {
-    // Converte o texto do controlador em um objeto TimeOfDay ou usa TimeOfDay.now() como padrão.
     TimeOfDay initialTime;
     if (_timeController.text.isNotEmpty) {
       final timeParts = _timeController.text.split(":");
@@ -103,6 +107,9 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
   @override
   Widget build(BuildContext context) {
     final userPoint = Provider.of<UserPointModel>(context);
+    final admModel = Provider.of<AdmModel>(context);
+    final userModel = Provider.of<UserModel>(context);
+    final readOnly = userModel.role == 'admin';
     return Scaffold(
       appBar: Header(false),
       resizeToAvoidBottomInset: true,
@@ -117,9 +124,11 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      setState(() {
-                        _tipoCorrecao = 'entrada';
-                      });
+                      if (!readOnly) {
+                        setState(() {
+                          _tipoCorrecao = 'entrada';
+                        });
+                      }
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -149,14 +158,16 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      setState(() {
-                        _tipoCorrecao = 'saída';
-                      });
+                      if (!readOnly) {
+                        setState(() {
+                          _tipoCorrecao = 'saida';
+                        });
+                      }
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
-                        color: _tipoCorrecao == 'saída'
+                        color: _tipoCorrecao == 'saida'
                             ? Colors.red
                             : Colors.white,
                         borderRadius: BorderRadius.circular(8.0),
@@ -165,10 +176,10 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
                         ),
                       ),
                       child: Text(
-                        'Saída',
+                        'Saida',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: _tipoCorrecao == 'saída'
+                          color: _tipoCorrecao == 'saida'
                               ? Colors.white
                               : Colors.black,
                           fontSize: 16.0,
@@ -187,7 +198,9 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.calendar_today),
                   onPressed: () {
-                    _selectDate(context);
+                    if (!readOnly) {
+                      _selectDate(context);
+                    }
                   },
                 ),
                 border: OutlineInputBorder(
@@ -202,11 +215,13 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
             TextField(
               controller: _timeController,
               decoration: InputDecoration(
-                labelText: 'Horário',
+                labelText: readOnly ? 'Horario antigo' : 'Horario',
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.access_time),
                   onPressed: () {
-                    _selectTime(context);
+                    if (!readOnly) {
+                      _selectTime(context);
+                    }
                   },
                 ),
                 border: OutlineInputBorder(
@@ -217,6 +232,25 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
               ),
               readOnly: true,
             ),
+            const SizedBox(height: 24.0),
+            if (userModel.role == 'admin') ...[
+              TextField(
+                controller: _newTimeController,
+                decoration: InputDecoration(
+                  labelText: 'Horario novo',
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.access_time),
+                    onPressed: () {},
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                readOnly: true,
+              )
+            ],
             const SizedBox(height: 24.0),
             TextField(
               controller: _reasonController,
@@ -230,24 +264,49 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
               ),
               maxLines: 3,
               maxLength: 150,
+              readOnly: readOnly,
             ),
             const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () async {
-                await userPoint.confirmAndRequestChangeWorkingTime(
-                    context,
-                    _reasonController,
-                    _timeController,
-                    widget.date,
-                    widget.hora,
-                    widget.originalKey);
-              },
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                backgroundColor: const Color.fromARGB(255, 205, 233, 255),
+            if (userModel.role == 'admin') ...[
+              ElevatedButton(
+                onPressed: () async {
+                  await admModel.confirmUserSolicitation(context, 'aprovar');
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  backgroundColor: const Color.fromARGB(255, 205, 233, 255),
+                ),
+                child: Text('Aceitar Correção'),
               ),
-              child: Text('SOLICITAR CORREÇÃO'),
-            ),
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: () async {
+                  await admModel.confirmUserSolicitation(context, 'rejeitar');
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  backgroundColor: const Color.fromARGB(255, 205, 233, 255),
+                ),
+                child: Text('Rejeitar Correção'),
+              ),
+            ],
+            if (userModel.role != 'admin')
+              ElevatedButton(
+                onPressed: () async {
+                  await userPoint.confirmAndRequestChangeWorkingTime(
+                      context,
+                      _reasonController,
+                      _timeController,
+                      widget.date,
+                      widget.hora,
+                      widget.originalKey);
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  backgroundColor: const Color.fromARGB(255, 205, 233, 255),
+                ),
+                child: Text('Solicitar Corrção'),
+              ),
             const SizedBox(height: 16.0),
             OutlinedButton(
               onPressed: () {
@@ -257,7 +316,7 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 backgroundColor: const Color.fromARGB(255, 255, 205, 205),
               ),
-              child: Text('CANCELAR', style: TextStyle(color: Colors.black)),
+              child: Text('Cancelar', style: TextStyle(color: Colors.black)),
             ),
           ],
         ),

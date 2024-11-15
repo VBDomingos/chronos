@@ -3,12 +3,54 @@ import '../widgets/circular_progress_painter.dart';
 import '../widgets/dotw_indicator.dart';
 import '../widgets/header.dart';
 import '../widgets/bottom_nav_bar.dart';
+import 'package:provider/provider.dart';
+import 'package:project/models/adm_model.dart';
+import 'package:project/models/usermodel.dart';
 
-class CompanyPage extends StatelessWidget {
+class CompanyPage extends StatefulWidget {
   const CompanyPage({super.key});
 
   @override
+  _CompanyPageState createState() => _CompanyPageState();
+}
+
+class _CompanyPageState extends State<CompanyPage> {
+  late Future<void> _fetchUsersFuture;
+  Map<String, bool> _expanded = {};
+  TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    final userModel = Provider.of<UserModel>(context, listen: false);
+    final admModel = Provider.of<AdmModel>(context, listen: false);
+
+    // Fetch users by company ID
+    _fetchUsersFuture = admModel.fetchUsersByCompanyId(userModel.companyId ?? '');
+    
+    // Listen to search field changes
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final admModel = Provider.of<AdmModel>(context);
+    final userNames = admModel.getUserNames();
+    final companyUsers = admModel.companyUsers;
+
+    final filteredUserNames = userNames.where((name) => name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: Header(false),
@@ -18,116 +60,40 @@ class CompanyPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Indicador de dia da semana
               DayoftheweekIndicator(),
 
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                CustomCircularProgress(),
-                const SizedBox(width: 30.0),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 5.0, vertical: 8.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.0),
-                        border: Border.all(color: Colors.green, width: 2.0),
-                      ),
-                      child: const Text(
-                        'Trabalhando',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(height: 4.0),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 8.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.0),
-                        border: Border.all(color: Colors.yellow, width: 2.0),
-                      ),
-                      child: const Text(
-                        'A Iniciar',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(height: 4.0),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 8.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.0),
-                        border: Border.all(color: Colors.red, width: 2.0),
-                      ),
-                      child: const Text(
-                        'Em Falta',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(height: 4.0),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 8.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.0),
-                        border: Border.all(color: Colors.blue, width: 2.0),
-                      ),
-                      child: const Text(
-                        'Ausente',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(height: 16.0),
-                  ],
-                ),
-              ]),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomCircularProgress(),
+                  const SizedBox(width: 30.0),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildStatusBox('Trabalhando', Colors.green),
+                      _buildStatusBox('A Iniciar', Colors.yellow),
+                      _buildStatusBox('Em Falta', Colors.red),
+                      _buildStatusBox('Ausente', Colors.blue),
+                    ],
+                  ),
+                ],
+              ),
 
               const SizedBox(height: 20.0),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Column(
-                    children: [
-                      const Text(
-                        'Completou Jorn.',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SummaryBox(color: Colors.green, value: '03'),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      const Text(
-                        'Atrasado',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SummaryBox(color: Colors.red, value: '01'),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      const Text(
-                        'Em Pausa',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SummaryBox(color: Colors.blue, value: '02'),
-                    ],
-                  ),
+                  _buildSummaryBox('Completou Jorn.', Colors.green, '03'),
+                  _buildSummaryBox('Atrasado', Colors.red, '01'),
+                  _buildSummaryBox('Em Pausa', Colors.blue, '02'),
                 ],
               ),
+
               const SizedBox(height: 24.0),
 
               TextField(
+                controller: _searchController,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.search),
                   hintText: 'Buscar Funcionário',
@@ -136,17 +102,83 @@ class CompanyPage extends StatelessWidget {
                   ),
                 ),
               ),
+
               const SizedBox(height: 24.0),
 
               Column(
                 children: [
-                  EmployeeStatusRow(status: 'Em Pausa', color: Colors.blue),
-                  const Divider(height: 2.0),
-                  EmployeeStatusRow(status: 'Trabalhando', color: Colors.green),
-                  const Divider(height: 2.0),
-                  EmployeeStatusRow(status: 'Trabalhando', color: Colors.green),
-                  const Divider(height: 2.0),
-                  EmployeeStatusRow(status: 'Faltou', color: Colors.red),
+                  ...filteredUserNames.map((name) {
+                    final user = companyUsers.firstWhere(
+                      (user) => user['name'] == name,
+                      orElse: () => {},
+                    );
+
+                    bool isExpanded = _expanded[name] ?? false;
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _expanded[name] = !isExpanded;
+                        });
+                      },
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: Container(
+                          height: isExpanded ? 120 : 55,
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    name,
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  Text(
+                                    user['isWorking'] == true ? 'Working' : 'Not Working',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: user['isWorking'] == true ? Colors.green : Colors.red,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (isExpanded) ...[
+                                const Divider(
+                                  color: Colors.grey,
+                                  height: 20,
+                                  thickness: 1,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Text(
+                                    'Role: ${user['role'] ?? 'Unknown'}',
+                                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
                 ],
               ),
             ],
@@ -156,7 +188,37 @@ class CompanyPage extends StatelessWidget {
       bottomNavigationBar: const CustomBottomNavigationBar(),
     );
   }
+
+  Widget _buildStatusBox(String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12.0),
+        border: Border.all(color: color, width: 2.0),
+      ),
+      child: Text(
+        
+        label,
+        style: const TextStyle(fontWeight: FontWeight.bold),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  Widget _buildSummaryBox(String label, Color color, String value) {
+    return Column(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        SummaryBox(color: color, value: value),
+      ],
+    );
+  }
 }
+
 
 class SummaryBox extends StatelessWidget {
   final Color color;
@@ -181,25 +243,6 @@ class SummaryBox extends StatelessWidget {
           style: TextStyle(
               fontSize: 24, fontWeight: FontWeight.bold, color: color),
         ),
-      ),
-    );
-  }
-}
-
-class EmployeeStatusRow extends StatelessWidget {
-  final String status;
-  final Color color;
-
-  const EmployeeStatusRow(
-      {super.key, required this.status, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: const Text('Funcionário'),
-      trailing: Text(
-        status,
-        style: TextStyle(color: color, fontSize: 16),
       ),
     );
   }

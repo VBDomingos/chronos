@@ -29,23 +29,4 @@ class AdmModel with ChangeNotifier {
   List<String> getUserNames() {
     return _companyUsers.map((user) => user['name'] as String).toList();
   }
-
-  Future<String?> getUserId(String name) async {
-    try {
-      QuerySnapshot<Map<String, dynamic>> userQuery = await _firestore
-          .collection('employees')
-          .where('name', isEqualTo: name)
-          .limit(1)
-          .get();
-
-      if (userQuery.docs.isNotEmpty) {
-        return userQuery.docs.first.id;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      print("Error retrieving user ID: $e");
-      return null;
-    }
-  }
 }

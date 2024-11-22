@@ -144,7 +144,7 @@ class _CompanyPageState extends State<CompanyPage> {
                       child: SizedBox(
                         width: double.infinity,
                         child: Container(
-                          height: isExpanded ? 120 : 55,
+                          height: isExpanded ? 120 : 60,
                           margin: const EdgeInsets.symmetric(vertical: 8),
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(

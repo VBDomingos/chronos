@@ -67,13 +67,11 @@ class _HistoryScreen extends State<HistoryScreen> {
               ),
               TextField(
                 controller: TextEditingController(
-                    text: userPoint.userFilter?.fullName ??
-                        ''),
+                    text: userPoint.userFilter?.fullName ?? ''),
                 readOnly: true,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  suffixIcon: Icon(
-                      Icons.lock),
+                  suffixIcon: Icon(Icons.lock),
                 ),
               ),
             ],

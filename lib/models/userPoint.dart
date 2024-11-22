@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:project/models/usermodel.dart';
+import 'package:project/views/user_screen.dart';
 import 'package:provider/provider.dart';
 
 class UserPointModel with ChangeNotifier {
@@ -12,6 +13,8 @@ class UserPointModel with ChangeNotifier {
   String? balanceFilterExpectedHours;
   String? balanceFilterHours;
   UserModel? userFilter;
+  String? lastEntryStartDate;
+  String? lastEntryEndDate;
 
   Future<void> addWorkingTime(BuildContext context, String type) async {
     this.loadingPoint = true;
@@ -229,6 +232,9 @@ class UserPointModel with ChangeNotifier {
       context, String startDate, String endDate, String type) async {
     resetValues();
 
+    lastEntryStartDate = startDate;
+    lastEntryEndDate = endDate;
+
     UserModel userModel =
         userFilter ?? Provider.of<UserModel>(context, listen: false);
     final dateFormatter = DateFormat("dd/MM/yyyy");
@@ -275,7 +281,6 @@ class UserPointModel with ChangeNotifier {
           }
         });
       }
-
       Duration expectedMonthlyHours = await calculateExpectedMonthlyHours(
         userModel.companyId!,
         userModel.workingPattern!,
@@ -311,6 +316,7 @@ class UserPointModel with ChangeNotifier {
           break;
         default:
       }
+
       notifyListeners();
     } catch (e) {
       print("Error calculating total worked hours: $e");
@@ -386,10 +392,11 @@ class UserPointModel with ChangeNotifier {
       String workingPattern, DateTime startDate, DateTime currentDate) async {
     Map<String, dynamic> hoursData =
         await fetchCompanyHours(companyId, workingPattern);
-
     Duration weekDayHours = calculateExpectedDailyHours(hoursData['weekDays']);
-    Duration saturdayHours =
-        calculateExpectedDailyHours(hoursData['weekEnd'] ?? {});
+
+    Duration saturdayHours = hoursData['weekEnd'] != null
+        ? calculateExpectedDailyHours(hoursData['weekEnd'] ?? {})
+        : Duration.zero;
 
     int businessDays = countBusinessDays(startDate, currentDate);
     int saturdays = countSaturdays(startDate, currentDate);

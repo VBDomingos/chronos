@@ -76,6 +76,7 @@ class _HorasWidgetState extends State<HorasWidget> {
           .collection('timeRecords')
           .where('date', isGreaterThanOrEqualTo: widget.dataInicial)
           .where('date', isLessThanOrEqualTo: widget.dataFinal)
+          .orderBy('date', descending: true)
           .get();
 
       if (snapshot.docs.isNotEmpty) {
@@ -120,6 +121,18 @@ class _HorasWidgetState extends State<HorasWidget> {
                   'longitude': longitudeSaida,
                   'originalKey': key,
                 });
+              }
+            });
+
+            record['entries'].sort((a, b) {
+              try {
+                DateTime timeA = DateTime.parse("1970-01-01 ${a['time']}:00");
+                DateTime timeB = DateTime.parse("1970-01-01 ${b['time']}:00");
+
+                return timeA.compareTo(timeB);
+              } catch (e) {
+                print("Erro ao comparar horários: $e");
+                return 0;
               }
             });
 

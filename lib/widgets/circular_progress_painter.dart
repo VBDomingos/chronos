@@ -14,7 +14,6 @@ class CustomCircularProgress extends StatelessWidget {
   Widget build(BuildContext context) {
     final notWorkingCount = totalEmployees - workingCount;
 
-    print('workingCount: $workingCount');
     return SizedBox(
       width: 150,
       height: 150,

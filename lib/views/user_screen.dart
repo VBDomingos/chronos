@@ -30,9 +30,7 @@ class _UserScreenState extends State<UserScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               DayoftheweekIndicator(),
-
               const SizedBox(height: 5),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -112,9 +110,7 @@ class _UserScreenState extends State<UserScreen> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 20),
-
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
@@ -167,9 +163,7 @@ class _UserScreenState extends State<UserScreen> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 20),
-
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
@@ -181,9 +175,7 @@ class _UserScreenState extends State<UserScreen> {
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                       const Icon(Icons.schedule, size: 40),
                       const SizedBox(width: 10),
-                      Text(
-                          DateFormat('H:mm').format(DateTime.now()
-                              .subtract(const Duration(hours: 3))),
+                      Text(DateFormat('H:mm').format(DateTime.now()),
                           style: const TextStyle(
                               fontSize: 40, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 16),

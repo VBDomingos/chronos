@@ -124,11 +124,11 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      if (!readOnly) {
-                        setState(() {
-                          _tipoCorrecao = 'entrada';
-                        });
-                      }
+                      // if (!readOnly) {
+                      //   setState(() {
+                      //     _tipoCorrecao = 'entrada';
+                      //   });
+                      // }
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -158,11 +158,11 @@ class _CorrecaoPontoScreenState extends State<CorrecaoPontoScreen> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      if (!readOnly) {
-                        setState(() {
-                          _tipoCorrecao = 'saida';
-                        });
-                      }
+                      // if (!readOnly) {
+                      //   setState(() {
+                      //     _tipoCorrecao = 'saida';
+                      //   });
+                      // }
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 12),
